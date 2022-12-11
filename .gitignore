@@ -58,3 +58,6 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+MVVM4Unity/Library/
+MVVM4Unity/Logs/
+MVVM4Unity/Temp/
