@@ -58,6 +58,7 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-MVVM4Unity/Library/
-MVVM4Unity/Logs/
-MVVM4Unity/Temp/
+React4Unity/Library/
+React4Unity/Logs/
+React4Unity/Temp/
+React4Unity/Packages/
