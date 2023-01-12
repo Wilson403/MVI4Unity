@@ -19,7 +19,7 @@ namespace React4Unity
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="poolType"></param>
-        /// <returns></returns>
+        /// <returns></returns> 
         public T Pop<T> (PoolType<T> poolType)
         {
             var storage = GetStorage (poolType);
