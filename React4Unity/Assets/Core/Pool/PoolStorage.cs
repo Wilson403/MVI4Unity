@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace React4Unity
+namespace MVI4Unity
 {
     public class PoolStorage<T> : IPoolStorage
     {

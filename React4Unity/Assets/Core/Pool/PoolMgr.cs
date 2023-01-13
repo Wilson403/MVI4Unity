@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-namespace React4Unity
+namespace MVI4Unity
 {
     public class PoolMgr : SafeSingleton<PoolMgr>
     {
@@ -53,33 +52,6 @@ namespace React4Unity
         public bool TryGetPoolType<T> (out IPoolType pooltype)
         {
             return _poolTypeDict.TryGetValue (typeof (T) , out pooltype);
-        }
-
-        /// <summary>
-        /// 获取String类型的列表
-        /// </summary>
-        /// <returns></returns>
-        public List<string> PopList4String ()
-        {
-            if ( TryGetPoolType<List<string>> (out var poolType) )
-            {
-                return Pop (( PoolType<List<string>> ) poolType);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 回收一个String类型的列表
-        /// </summary>
-        /// <param name="item"></param>
-        public void PushList4String (List<string> item)
-        {
-            if ( TryGetPoolType<List<string>> (out var poolType) )
-            {
-                Push (( PoolType<List<string>> ) poolType , item);
-                return;
-            }
-            Debug.LogError ($"PoolMar PushList4String Find PoolType Error");
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-namespace React4Unity
+namespace MVI4Unity
 {
     /// <summary>
     /// 单件
