@@ -39,6 +39,15 @@ namespace MVI4Unity
         }
 
         /// <summary>
+        /// 设置父对象
+        /// </summary>
+        /// <param name="parent"></param>
+        public void SetParent (Transform parent) 
+        {
+            _transform.SetParent (parent);
+        }
+
+        /// <summary>
         /// 是否销毁了
         /// </summary>
         /// <returns></returns>

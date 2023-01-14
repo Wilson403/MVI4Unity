@@ -1,8 +1,7 @@
 ﻿using System;
-using MVI4Unity;
 using UnityEngine;
 
-namespace Hot
+namespace MVI4Unity
 {
     /// <summary>
     /// 界面管理器
