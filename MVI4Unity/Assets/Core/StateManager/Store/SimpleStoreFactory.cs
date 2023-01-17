@@ -21,7 +21,9 @@ namespace MVI4Unity
 
         public Store<S> CreateStore<S, R> () where S : AStateBase where R : IReducer
         {
-            return new Store<S> (GetReducer<R> () as Reducer<S>);
+            Store<S> store = new Store<S> ();
+            store.AddReducer (GetReducer<R> () as Reducer<S>);
+            return store;
         }
     }
 }

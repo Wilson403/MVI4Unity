@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace MVI4Unity
@@ -28,6 +29,7 @@ namespace MVI4Unity
     {
         private readonly Dictionary<string , Store<S>.Reducer> _tag2Func = new Dictionary<string , Store<S>.Reducer> ();
         private readonly Dictionary<string , Store<S>.AsyncReducer> _tag2AsyncFunc = new Dictionary<string , Store<S>.AsyncReducer> ();
+        private readonly Dictionary<string , Store<S>.CallbackReducer> _tag2Callback = new Dictionary<string , Store<S>.CallbackReducer> ();
 
         public Reducer ()
         {
@@ -61,6 +63,38 @@ namespace MVI4Unity
         }
 
         /// <summary>
+        /// 添加异步方法
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="asyncReducer"></param>
+        protected void AddAsyncFunc (Enum tag , Store<S>.AsyncReducer asyncReducer)
+        {
+            string @enum = GetEnumName (tag);
+            if ( _tag2AsyncFunc.ContainsKey (@enum) )
+            {
+                Debug.LogError ($"Repeat key: [{@enum}]");
+                return;
+            }
+            _tag2AsyncFunc [@enum] = asyncReducer;
+        }
+
+        /// <summary>
+        /// 添加回调方法
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="asyncReducer"></param>
+        protected void AddCallBack (Enum tag , Store<S>.CallbackReducer asyncReducer)
+        {
+            string @enum = GetEnumName (tag);
+            if ( _tag2Callback.ContainsKey (@enum) )
+            {
+                Debug.LogError ($"Repeat key: [{@enum}]");
+                return;
+            }
+            _tag2Callback [@enum] = asyncReducer;
+        }
+
+        /// <summary>
         /// 执行同步方法
         /// </summary>
         /// <param name="tag"></param>
@@ -78,6 +112,39 @@ namespace MVI4Unity
         }
 
         /// <summary>
+        /// 执行异步方法
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="lastState"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        async public Task<S> AsyncExecute (Enum tag , S lastState , object @param)
+        {
+            string @enum = GetEnumName (tag);
+            if ( _tag2AsyncFunc.TryGetValue (@enum , out Store<S>.AsyncReducer func) )
+            {
+                return await func?.Invoke (lastState , param);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 执行回调
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="lastState"></param>
+        /// <param name="param"></param>
+        /// <param name="setNewState"></param>
+        public void ExecuteCallback (Enum tag , S lastState , object @param , Action<S> setNewState)
+        {
+            string @enum = GetEnumName (tag);
+            if ( _tag2Callback.TryGetValue (@enum , out Store<S>.CallbackReducer func) )
+            {
+                func?.Invoke (lastState , param , setNewState);
+            }
+        }
+
+        /// <summary>
         /// 获取函数类型
         /// </summary>
         /// <param name="tag"></param>
@@ -88,6 +155,14 @@ namespace MVI4Unity
             if ( _tag2Func.ContainsKey (@enum) )
             {
                 return ReducerFuncType.Synchronize;
+            }
+            else if ( _tag2AsyncFunc.ContainsKey (@enum) )
+            {
+                return ReducerFuncType.Async;
+            }
+            else if ( _tag2Callback.ContainsKey (@enum) )
+            {
+                return ReducerFuncType.CallBack;
             }
             return ReducerFuncType.None;
         }

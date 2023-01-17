@@ -7,7 +7,7 @@ namespace MVI4Unity
         private void Awake ()
         {
             Store<State01> store = SimpleStoreFactory.Ins.CreateStore<State01 , Reducer01> ();
-            store.Subscribe (Reducer01.Reducer01FunType.Func02 , (State01 s) =>
+            store.Subscribe (Reducer01.Reducer01FunType.Func01 , (State01 s) =>
             {
                 Debug.LogWarning ("State01");
             });
@@ -17,12 +17,12 @@ namespace MVI4Unity
                 Debug.LogWarning ("State02");
             });
 
-            store.Subscribe ((s) =>
+            store.Subscribe (Reducer01.Reducer01FunType.Func03 , (s) =>
             {
                 Debug.LogWarning ("State03");
             });
 
-            store.DisPatch (Reducer01.Reducer01FunType.Func01 , default);
+            store.DisPatch (Reducer01.Reducer01FunType.Func03 , default);
 
             #region Pool Test
 

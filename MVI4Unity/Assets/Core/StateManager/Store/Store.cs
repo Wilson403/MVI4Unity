@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using static UnityEngine.Application;
+using System.Threading.Tasks;
 
 namespace MVI4Unity
 {
@@ -16,7 +16,7 @@ namespace MVI4Unity
 
     public class Store<S> : IStore where S : AStateBase
     {
-        private readonly Reducer<S> _reducer;
+        private Reducer<S> _reducer;
 
         /// <summary>
         /// 回调集合
@@ -37,14 +37,26 @@ namespace MVI4Unity
         /// <param name="lastState"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public delegate S AsyncReducer (S lastState , object @param);
+        public delegate Task<S> AsyncReducer (S lastState , object @param);
 
-        public Store (Reducer<S> reducer)
+        /// <summary>
+        /// 回调委托
+        /// </summary>
+        /// <param name="lastState"></param>
+        /// <param name="param"></param>
+        /// <param name="setNewState"></param>
+        public delegate void CallbackReducer (S lastState , object @param , Action<S> setNewState);
+
+        /// <summary>
+        /// 添加Reducer
+        /// </summary>
+        /// <param name="reducer"></param>
+        public void AddReducer (Reducer<S> reducer) 
         {
             _reducer = reducer;
         }
 
-        public void DisPatch (Enum tag , object @param)
+        async public void DisPatch (Enum tag , object @param)
         {
             ReducerFuncType funcType = _reducer.GetReducerFuncType (tag);
             switch ( funcType )
@@ -54,6 +66,24 @@ namespace MVI4Unity
                         S lastState = GetCurrentState ();
                         S newState = _reducer.Execute (tag , lastState , param);
                         SetNewState (tag , newState);
+                    }
+                    break;
+
+                case ReducerFuncType.Async:
+                    {
+                        S lastState = GetCurrentState ();
+                        S newState = await _reducer.AsyncExecute (tag , lastState , param);
+                        SetNewState (tag , newState);
+                    }
+                    break;
+
+                case ReducerFuncType.CallBack:
+                    {
+                        S lastState = GetCurrentState ();
+                        _reducer.ExecuteCallback (tag , lastState , param , (newState) =>
+                        {
+                            SetNewState (tag , newState);
+                        });
                     }
                     break;
 
