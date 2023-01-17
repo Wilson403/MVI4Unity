@@ -25,6 +25,10 @@ namespace MVI4Unity
         CallBack = 3
     }
 
+    /// <summary>
+    /// Reducer: 无状态设计，函数式编程
+    /// </summary>
+    /// <typeparam name="S"></typeparam>
     public abstract class Reducer<S> : IReducer where S : AStateBase
     {
         private readonly Dictionary<string , Store<S>.Reducer> _tag2Func = new Dictionary<string , Store<S>.Reducer> ();

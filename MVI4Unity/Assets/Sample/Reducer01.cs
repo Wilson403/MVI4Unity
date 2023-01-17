@@ -27,18 +27,18 @@ namespace MVI4Unity
 
         private State01 Func01 (State01 oldState , object @param)
         {
-            return default;
+            return new State01 ();
         }
 
         async private Task<State01> Func02 (State01 oldState , object @param)
         {
             await Task.Run (() => { Thread.Sleep (3000); });
-            return default;
+            return new State01 ();
         }
 
-        private async void Func03 (State01 oldState , object @param , Action<State01> setNewState)
+        private void Func03 (State01 oldState , object @param , Action<State01> setNewState)
         {
-            setNewState.Invoke (default);
+            setNewState.Invoke (new State01 ());
         }
     }
 }
