@@ -24,7 +24,7 @@ namespace MVI4Unity
         CallBack = 3
     }
 
-    public abstract class Reducer<S> where S : AStateBase
+    public abstract class Reducer<S> : IReducer where S : AStateBase
     {
         private readonly Dictionary<string , Store<S>.Reducer> _tag2Func = new Dictionary<string , Store<S>.Reducer> ();
         private readonly Dictionary<string , Store<S>.AsyncReducer> _tag2AsyncFunc = new Dictionary<string , Store<S>.AsyncReducer> ();
@@ -41,7 +41,7 @@ namespace MVI4Unity
 
         protected string GetEnumName (Enum tag)
         {
-            return tag.GetType ().FullName;
+            return tag.ToString ();
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace MVI4Unity
         /// <param name="reducer"></param>
         protected void AddFunc (Enum tag , Store<S>.Reducer reducer)
         {
-            var @enum = GetEnumName (tag);
+            string @enum = GetEnumName (tag);
             if ( _tag2Func.ContainsKey (@enum) )
             {
                 Debug.LogError ($"Repeat key: [{@enum}]");
@@ -67,15 +67,14 @@ namespace MVI4Unity
         /// <param name="lastState"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public bool Execute (Enum tag , S lastState , object @param)
+        public S Execute (Enum tag , S lastState , object @param)
         {
-            var @enum = GetEnumName (tag);
-            if ( _tag2Func.TryGetValue (@enum , out var func) )
+            string @enum = GetEnumName (tag);
+            if ( _tag2Func.TryGetValue (@enum , out Store<S>.Reducer func) )
             {
-                func?.Invoke (lastState , param);
-                return true;
+                return func?.Invoke (lastState , param);
             }
-            return false;
+            return null;
         }
 
         /// <summary>
@@ -85,7 +84,7 @@ namespace MVI4Unity
         /// <returns></returns>
         public ReducerFuncType GetReducerFuncType (Enum tag)
         {
-            var @enum = GetEnumName (tag);
+            string @enum = GetEnumName (tag);
             if ( _tag2Func.ContainsKey (@enum) )
             {
                 return ReducerFuncType.Synchronize;

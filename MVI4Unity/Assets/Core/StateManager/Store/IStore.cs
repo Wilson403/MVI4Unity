@@ -1,15 +1,14 @@
-﻿namespace MVI4Unity
+﻿using System;
+
+namespace MVI4Unity
 {
     public interface IStore
     {
         /// <summary>
         /// 派发
         /// </summary>
-        void DisPatch ();
-
-        /// <summary>
-        /// 订阅
-        /// </summary>
-        void Subscribe ();
+        /// <param name="tag"></param>
+        /// <param name="param"></param>
+        void DisPatch (Enum tag , object @param);
     }
 }

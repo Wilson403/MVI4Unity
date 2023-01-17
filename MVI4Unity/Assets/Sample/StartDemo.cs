@@ -6,6 +6,26 @@ namespace MVI4Unity
     {
         private void Awake ()
         {
+            Store<State01> store = SimpleStoreFactory.Ins.CreateStore<State01 , Reducer01> ();
+            store.Subscribe (Reducer01.Reducer01FunType.Func02 , (State01 s) =>
+            {
+                Debug.LogWarning ("State01");
+            });
+
+            store.Subscribe (Reducer01.Reducer01FunType.Func02 , (s) =>
+            {
+                Debug.LogWarning ("State02");
+            });
+
+            store.Subscribe ((s) =>
+            {
+                Debug.LogWarning ("State03");
+            });
+
+            store.DisPatch (Reducer01.Reducer01FunType.Func01 , default);
+
+            #region Pool Test
+
             //var windowItem = PoolMgr.Ins.PopAWindow<Window01> ("Windown01" , gameObject.transform);
             //PoolMgr.Ins.PushAWindow (windowItem);
 
@@ -13,6 +33,8 @@ namespace MVI4Unity
             //var windowItem = pool.Pop ();
             //pool.Push (windowItem);
             //pool.Pop ();
+
+            #endregion
         }
     }
 }
