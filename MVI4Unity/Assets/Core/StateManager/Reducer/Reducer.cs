@@ -33,8 +33,8 @@ namespace MVI4Unity
     /// <typeparam name="E"></typeparam>
     public abstract class Reducer<S, E> : IReducer where S : AStateBase where E : Enum
     {
-        private readonly Dictionary<string , Store<S>.Reducer> _tag2Func = new Dictionary<string , Store<S>.Reducer> ();
-        private readonly Dictionary<string , Store<S>.AsyncReducer> _tag2AsyncFunc = new Dictionary<string , Store<S>.AsyncReducer> ();
+        private readonly Dictionary<string , Store<S>.Reducer> _tag2Method = new Dictionary<string , Store<S>.Reducer> ();
+        private readonly Dictionary<string , Store<S>.AsyncReducer> _tag2AsyncMethod = new Dictionary<string , Store<S>.AsyncReducer> ();
         private readonly Dictionary<string , Store<S>.CallbackReducer> _tag2Callback = new Dictionary<string , Store<S>.CallbackReducer> ();
 
         public Reducer ()
@@ -51,22 +51,22 @@ namespace MVI4Unity
             for ( int i = 0 ; i < methods.Length ; i++ )
             {
                 MethodInfo method = methods [i];
-                ReducerFuncInfoAttribute attr = method.GetCustomAttribute<ReducerFuncInfoAttribute> ();
+                ReducerMethodAttribute attr = method.GetCustomAttribute<ReducerMethodAttribute> ();
                 if ( attr != null )
                 {
-                    Enum tag = Enum.ToObject (typeof (E) , attr.funcTag) as Enum;
+                    Enum tag = Enum.ToObject (typeof (E) , attr.methodTag) as Enum;
 
                     if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.Reducer reducer) )
-                        AddFunc (tag , reducer);
+                        AddMethod (tag , reducer);
 
                     else if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.AsyncReducer asyncReducer) )
-                        AddAsyncFunc (tag , asyncReducer);
+                        AddAsyncMethod (tag , asyncReducer);
 
                     else if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.CallbackReducer callback) )
                         AddCallBack (tag , callback);
 
                     else
-                        Debug.LogError ($"[{attr.funcTag}] Register fail");
+                        Debug.LogError ($"[{attr.methodTag}] Register fail");
                 }
             }
         }
@@ -81,15 +81,15 @@ namespace MVI4Unity
         /// </summary>
         /// <param name="tag"></param>
         /// <param name="reducer"></param>
-        private void AddFunc (Enum tag , Store<S>.Reducer reducer)
+        private void AddMethod (Enum tag , Store<S>.Reducer reducer)
         {
             string @enum = GetEnumName (tag);
-            if ( _tag2Func.ContainsKey (@enum) )
+            if ( _tag2Method.ContainsKey (@enum) )
             {
                 Debug.LogError ($"Repeat key: [{@enum}]");
                 return;
             }
-            _tag2Func [@enum] = reducer;
+            _tag2Method [@enum] = reducer;
         }
 
         /// <summary>
@@ -97,15 +97,15 @@ namespace MVI4Unity
         /// </summary>
         /// <param name="tag"></param>
         /// <param name="asyncReducer"></param>
-        private void AddAsyncFunc (Enum tag , Store<S>.AsyncReducer asyncReducer)
+        private void AddAsyncMethod (Enum tag , Store<S>.AsyncReducer asyncReducer)
         {
             string @enum = GetEnumName (tag);
-            if ( _tag2AsyncFunc.ContainsKey (@enum) )
+            if ( _tag2AsyncMethod.ContainsKey (@enum) )
             {
                 Debug.LogError ($"Repeat key: [{@enum}]");
                 return;
             }
-            _tag2AsyncFunc [@enum] = asyncReducer;
+            _tag2AsyncMethod [@enum] = asyncReducer;
         }
 
         /// <summary>
@@ -127,18 +127,18 @@ namespace MVI4Unity
         public void ExecuteCallback (Enum tag , object lastState , object param , Action<object> setNewState)
         {
             string @enum = GetEnumName (tag);
-            if ( _tag2Callback.TryGetValue (@enum , out Store<S>.CallbackReducer func) )
+            if ( _tag2Callback.TryGetValue (@enum , out Store<S>.CallbackReducer method) )
             {
-                func?.Invoke (lastState as S , param , setNewState);
+                method?.Invoke (lastState as S , param , setNewState);
             }
         }
 
         async public Task<object> AsyncExecute (Enum tag , object lastState , object param)
         {
             string @enum = GetEnumName (tag);
-            if ( _tag2AsyncFunc.TryGetValue (@enum , out Store<S>.AsyncReducer func) )
+            if ( _tag2AsyncMethod.TryGetValue (@enum , out Store<S>.AsyncReducer method) )
             {
-                return await func?.Invoke (lastState as S , param);
+                return await method?.Invoke (lastState as S , param);
             }
             return null;
         }
@@ -146,9 +146,9 @@ namespace MVI4Unity
         public object Execute (Enum tag , object lastState , object param)
         {
             string @enum = GetEnumName (tag);
-            if ( _tag2Func.TryGetValue (@enum , out Store<S>.Reducer func) )
+            if ( _tag2Method.TryGetValue (@enum , out Store<S>.Reducer method) )
             {
-                return func?.Invoke (lastState as S , param);
+                return method?.Invoke (lastState as S , param);
             }
             return null;
         }
@@ -156,11 +156,11 @@ namespace MVI4Unity
         public ReducerExecuteType GetReducerExecuteType (Enum tag)
         {
             string @enum = GetEnumName (tag);
-            if ( _tag2Func.ContainsKey (@enum) )
+            if ( _tag2Method.ContainsKey (@enum) )
             {
                 return ReducerExecuteType.Synchronize;
             }
-            else if ( _tag2AsyncFunc.ContainsKey (@enum) )
+            else if ( _tag2AsyncMethod.ContainsKey (@enum) )
             {
                 return ReducerExecuteType.Async;
             }

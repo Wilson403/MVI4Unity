@@ -3,21 +3,21 @@
 namespace MVI4Unity
 {
     [AttributeUsage (AttributeTargets.Method , AllowMultiple = false)]
-    internal class ReducerFuncInfoAttribute : Attribute
+    internal class ReducerMethodAttribute : Attribute
     {
         /// <summary>
-        /// 函数标识
+        /// 方法标识
         /// </summary>
-        public int funcTag;
+        public int methodTag;
 
         /// <summary>
         /// 是否自动执行
         /// </summary>
         public bool autoExecute;
 
-        public ReducerFuncInfoAttribute (int funcTag , bool autoExecute = false)
+        public ReducerMethodAttribute (int funcTag , bool autoExecute = false)
         {
-            this.funcTag = funcTag;
+            this.methodTag = funcTag;
             this.autoExecute = autoExecute;
         }
     }
