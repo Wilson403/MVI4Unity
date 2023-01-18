@@ -11,19 +11,13 @@ namespace MVI4Unity
         public int funcTag;
 
         /// <summary>
-        /// 函数的执行方式
-        /// </summary>
-        public ReducerExecuteType reducerExecuteType;
-
-        /// <summary>
         /// 是否自动执行
         /// </summary>
         public bool autoExecute;
 
-        public ReducerFuncInfoAttribute (int funcTag , ReducerExecuteType reducerExecuteType , bool autoExecute = false)
+        public ReducerFuncInfoAttribute (int funcTag , bool autoExecute = false)
         {
             this.funcTag = funcTag;
-            this.reducerExecuteType = reducerExecuteType;
             this.autoExecute = autoExecute;
         }
     }

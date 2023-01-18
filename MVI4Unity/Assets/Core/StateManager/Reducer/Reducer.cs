@@ -55,39 +55,18 @@ namespace MVI4Unity
                 if ( attr != null )
                 {
                     Enum tag = Enum.ToObject (typeof (E) , attr.funcTag) as Enum;
-                    switch ( attr.reducerExecuteType )
-                    {
-                        case ReducerExecuteType.Synchronize:
-                            {
-                                if ( Delegate.CreateDelegate (typeof (Store<S>.Reducer) , this , method) is Store<S>.Reducer @delegate )
-                                    AddFunc (tag , @delegate);
-                                else
-                                    Debug.LogError ($"{method.Name} not synchronize method");
-                            }
-                            break;
 
-                        case ReducerExecuteType.Async:
-                            {
-                                if ( Delegate.CreateDelegate (typeof (Store<S>.AsyncReducer) , this , method) is Store<S>.AsyncReducer @delegate )
-                                    AddAsyncFunc (tag , @delegate);
-                                else
-                                    Debug.LogError ($"{method.Name} not async method");
-                            }
-                            break;
+                    if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.Reducer reducer) )
+                        AddFunc (tag , reducer);
 
-                        case ReducerExecuteType.CallBack:
-                            {
-                                if ( Delegate.CreateDelegate (typeof (Store<S>.CallbackReducer) , this , method) is Store<S>.CallbackReducer @delegate )
-                                    AddCallBack (tag , @delegate);
-                                else
-                                    Debug.LogError ($"{method.Name} not callback method");
-                            }
-                            break;
+                    else if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.AsyncReducer asyncReducer) )
+                        AddAsyncFunc (tag , asyncReducer);
 
-                        default:
-                            Debug.LogError ($"No permission:[{attr.reducerExecuteType}]");
-                            break;
-                    }
+                    else if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.CallbackReducer callback) )
+                        AddCallBack (tag , callback);
+
+                    else
+                        Debug.LogError ($"[{attr.funcTag}] Register fail");
                 }
             }
         }
