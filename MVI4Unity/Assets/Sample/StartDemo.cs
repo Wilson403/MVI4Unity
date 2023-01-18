@@ -22,6 +22,8 @@ namespace MVI4Unity
                 Debug.LogWarning ("State03");
             });
 
+            store.DisPatch (Reducer01.Reducer01FunType.Func01 , default);
+            store.DisPatch (Reducer01.Reducer01FunType.Func02 , default);
             store.DisPatch (Reducer01.Reducer01FunType.Func03 , default);
 
             #region Pool Test

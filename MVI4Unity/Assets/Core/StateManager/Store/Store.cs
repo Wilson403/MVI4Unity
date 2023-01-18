@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.Android;
 
 namespace MVI4Unity
 {
@@ -16,7 +18,7 @@ namespace MVI4Unity
 
     public class Store<S> : IStore where S : AStateBase
     {
-        private Reducer<S> _reducer;
+        private IReducer _reducer;
 
         /// <summary>
         /// 回调集合
@@ -51,43 +53,44 @@ namespace MVI4Unity
         /// 添加Reducer
         /// </summary>
         /// <param name="reducer"></param>
-        public void AddReducer (Reducer<S> reducer) 
+        public void AddReducer (IReducer reducer) 
         {
             _reducer = reducer;
         }
 
         async public void DisPatch (Enum tag , object @param)
         {
-            ReducerFuncType funcType = _reducer.GetReducerFuncType (tag);
+            ReducerExecuteType funcType = _reducer.GetReducerExecuteType (tag);
             switch ( funcType )
             {
-                case ReducerFuncType.Synchronize:
+                case ReducerExecuteType.Synchronize:
                     {
                         S lastState = GetCurrentState ();
-                        S newState = _reducer.Execute (tag , lastState , param);
+                        S newState = _reducer.Execute (tag , lastState , param) as S;
                         SetNewState (tag , newState);
                     }
                     break;
 
-                case ReducerFuncType.Async:
+                case ReducerExecuteType.Async:
                     {
                         S lastState = GetCurrentState ();
-                        S newState = await _reducer.AsyncExecute (tag , lastState , param);
+                        S newState = await _reducer.AsyncExecute (tag , lastState , param) as S;
                         SetNewState (tag , newState);
                     }
                     break;
 
-                case ReducerFuncType.CallBack:
+                case ReducerExecuteType.CallBack:
                     {
                         S lastState = GetCurrentState ();
                         _reducer.ExecuteCallback (tag , lastState , param , (newState) =>
                         {
-                            SetNewState (tag , newState);
+                            SetNewState (tag , newState as S);
                         });
                     }
                     break;
 
                 default:
+                    Debug.LogError ($"Not Permission:[{funcType}]");
                     break;
             }
         }

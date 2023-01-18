@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace MVI4Unity
 {
-    public enum ReducerFuncType
+    public enum ReducerExecuteType
     {
         None = 0,
 
@@ -26,10 +27,11 @@ namespace MVI4Unity
     }
 
     /// <summary>
-    /// Reducer: 无状态设计，函数式编程
+    /// Reducer: 无状态设计，相当于一个函数容器，同类型的Reducer整个生命周期只需创建一次
     /// </summary>
     /// <typeparam name="S"></typeparam>
-    public abstract class Reducer<S> : IReducer where S : AStateBase
+    /// <typeparam name="E"></typeparam>
+    public abstract class Reducer<S, E> : IReducer where S : AStateBase where E : Enum
     {
         private readonly Dictionary<string , Store<S>.Reducer> _tag2Func = new Dictionary<string , Store<S>.Reducer> ();
         private readonly Dictionary<string , Store<S>.AsyncReducer> _tag2AsyncFunc = new Dictionary<string , Store<S>.AsyncReducer> ();
@@ -43,9 +45,54 @@ namespace MVI4Unity
         /// <summary>
         /// 注册函数
         /// </summary>
-        protected abstract void RegisterFunc ();
+        private void RegisterFunc ()
+        {
+            MethodInfo [] methods = GetType ().GetMethods (BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            for ( int i = 0 ; i < methods.Length ; i++ )
+            {
+                MethodInfo method = methods [i];
+                ReducerFuncInfoAttribute attr = method.GetCustomAttribute<ReducerFuncInfoAttribute> ();
+                if ( attr != null )
+                {
+                    Enum tag = Enum.ToObject (typeof (E) , attr.funcTag) as Enum;
+                    switch ( attr.reducerExecuteType )
+                    {
+                        case ReducerExecuteType.Synchronize:
+                            {
+                                if ( Delegate.CreateDelegate (typeof (Store<S>.Reducer) , this , method) is Store<S>.Reducer @delegate )
+                                    AddFunc (tag , @delegate);
+                                else
+                                    Debug.LogError ($"{method.Name} not synchronize method");
+                            }
+                            break;
 
-        protected string GetEnumName (Enum tag)
+                        case ReducerExecuteType.Async:
+                            {
+                                if ( Delegate.CreateDelegate (typeof (Store<S>.AsyncReducer) , this , method) is Store<S>.AsyncReducer @delegate )
+                                    AddAsyncFunc (tag , @delegate);
+                                else
+                                    Debug.LogError ($"{method.Name} not async method");
+                            }
+                            break;
+
+                        case ReducerExecuteType.CallBack:
+                            {
+                                if ( Delegate.CreateDelegate (typeof (Store<S>.CallbackReducer) , this , method) is Store<S>.CallbackReducer @delegate )
+                                    AddCallBack (tag , @delegate);
+                                else
+                                    Debug.LogError ($"{method.Name} not callback method");
+                            }
+                            break;
+
+                        default:
+                            Debug.LogError ($"No permission:[{attr.reducerExecuteType}]");
+                            break;
+                    }
+                }
+            }
+        }
+
+        private string GetEnumName (Enum tag)
         {
             return tag.ToString ();
         }
@@ -55,7 +102,7 @@ namespace MVI4Unity
         /// </summary>
         /// <param name="tag"></param>
         /// <param name="reducer"></param>
-        protected void AddFunc (Enum tag , Store<S>.Reducer reducer)
+        private void AddFunc (Enum tag , Store<S>.Reducer reducer)
         {
             string @enum = GetEnumName (tag);
             if ( _tag2Func.ContainsKey (@enum) )
@@ -71,7 +118,7 @@ namespace MVI4Unity
         /// </summary>
         /// <param name="tag"></param>
         /// <param name="asyncReducer"></param>
-        protected void AddAsyncFunc (Enum tag , Store<S>.AsyncReducer asyncReducer)
+        private void AddAsyncFunc (Enum tag , Store<S>.AsyncReducer asyncReducer)
         {
             string @enum = GetEnumName (tag);
             if ( _tag2AsyncFunc.ContainsKey (@enum) )
@@ -87,7 +134,7 @@ namespace MVI4Unity
         /// </summary>
         /// <param name="tag"></param>
         /// <param name="asyncReducer"></param>
-        protected void AddCallBack (Enum tag , Store<S>.CallbackReducer asyncReducer)
+        private void AddCallBack (Enum tag , Store<S>.CallbackReducer asyncReducer)
         {
             string @enum = GetEnumName (tag);
             if ( _tag2Callback.ContainsKey (@enum) )
@@ -98,77 +145,51 @@ namespace MVI4Unity
             _tag2Callback [@enum] = asyncReducer;
         }
 
-        /// <summary>
-        /// 执行同步方法
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="lastState"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        public S Execute (Enum tag , S lastState , object @param)
-        {
-            string @enum = GetEnumName (tag);
-            if ( _tag2Func.TryGetValue (@enum , out Store<S>.Reducer func) )
-            {
-                return func?.Invoke (lastState , param);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 执行异步方法
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="lastState"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        async public Task<S> AsyncExecute (Enum tag , S lastState , object @param)
-        {
-            string @enum = GetEnumName (tag);
-            if ( _tag2AsyncFunc.TryGetValue (@enum , out Store<S>.AsyncReducer func) )
-            {
-                return await func?.Invoke (lastState , param);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 执行回调
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="lastState"></param>
-        /// <param name="param"></param>
-        /// <param name="setNewState"></param>
-        public void ExecuteCallback (Enum tag , S lastState , object @param , Action<S> setNewState)
+        public void ExecuteCallback (Enum tag , object lastState , object param , Action<object> setNewState)
         {
             string @enum = GetEnumName (tag);
             if ( _tag2Callback.TryGetValue (@enum , out Store<S>.CallbackReducer func) )
             {
-                func?.Invoke (lastState , param , setNewState);
+                func?.Invoke (lastState as S , param , setNewState);
             }
         }
 
-        /// <summary>
-        /// 获取函数类型
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <returns></returns>
-        public ReducerFuncType GetReducerFuncType (Enum tag)
+        async public Task<object> AsyncExecute (Enum tag , object lastState , object param)
+        {
+            string @enum = GetEnumName (tag);
+            if ( _tag2AsyncFunc.TryGetValue (@enum , out Store<S>.AsyncReducer func) )
+            {
+                return await func?.Invoke (lastState as S , param);
+            }
+            return null;
+        }
+
+        public object Execute (Enum tag , object lastState , object param)
+        {
+            string @enum = GetEnumName (tag);
+            if ( _tag2Func.TryGetValue (@enum , out Store<S>.Reducer func) )
+            {
+                return func?.Invoke (lastState as S , param);
+            }
+            return null;
+        }
+
+        public ReducerExecuteType GetReducerExecuteType (Enum tag)
         {
             string @enum = GetEnumName (tag);
             if ( _tag2Func.ContainsKey (@enum) )
             {
-                return ReducerFuncType.Synchronize;
+                return ReducerExecuteType.Synchronize;
             }
             else if ( _tag2AsyncFunc.ContainsKey (@enum) )
             {
-                return ReducerFuncType.Async;
+                return ReducerExecuteType.Async;
             }
             else if ( _tag2Callback.ContainsKey (@enum) )
             {
-                return ReducerFuncType.CallBack;
+                return ReducerExecuteType.CallBack;
             }
-            return ReducerFuncType.None;
+            return ReducerExecuteType.None;
         }
     }
 }
