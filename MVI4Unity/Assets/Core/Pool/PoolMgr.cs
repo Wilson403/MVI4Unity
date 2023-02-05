@@ -68,26 +68,25 @@ namespace MVI4Unity
         #region 集合对象池，集合实例回收利用，进行Clear而不是重新New，减少GC，比如List，Stack等都是一个道理
 
         /// <summary>
-        /// 针对类型List<string>的池
+        /// 针对List的池
         /// </summary>
-        public PoolType<List<string>> Pool4StringList
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public PoolType<List<T>> GetList<T> ()
         {
-            get
+            if ( !_poolTypeDict.ContainsKey (typeof (List<T>)) )
             {
-                if ( !_poolTypeDict.ContainsKey (typeof (List<string>)) )
-                {
-                    _poolTypeDict [typeof (List<string>)] = new PoolType<List<string>> (
-                        onCreate: () =>
-                        {
-                            return new List<string> ();
-                        } ,
-                        onPush: (t) =>
-                        {
-                            t.Clear ();
-                        });
-                }
-                return _poolTypeDict [typeof (List<string>)] as PoolType<List<string>>;
+                _poolTypeDict [typeof (List<T>)] = new PoolType<List<T>> (
+                    onCreate: () =>
+                    {
+                        return new List<T> ();
+                    } ,
+                    onPush: (t) =>
+                    {
+                        t.Clear ();
+                    });
             }
+            return _poolTypeDict [typeof (List<T>)] as PoolType<List<T>>;
         }
 
         #endregion
@@ -177,6 +176,27 @@ namespace MVI4Unity
         void OnAWindowPush (AWindow window)
         {
 
+        }
+
+        #endregion
+
+        #region WindowNode对象池
+
+        /// <summary>
+        /// 获取窗口节点对象池
+        /// </summary>
+        /// <returns></returns>
+        public PoolType<WindowNode> GetWindowNodePool ()
+        {
+            Type type = typeof (WindowNode);
+            if ( !_poolTypeDict.ContainsKey (typeof (WindowNode)) )
+            {
+                _poolTypeDict [type] = new PoolType<WindowNode> (
+                    onCreate: () => { return new WindowNode (); } ,
+                    onPop: default ,
+                    onPush: default);
+            }
+            return _poolTypeDict [type] as PoolType<WindowNode>;
         }
 
         #endregion

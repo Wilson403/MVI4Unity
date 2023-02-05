@@ -6,25 +6,43 @@ namespace MVI4Unity
     {
         private void Awake ()
         {
-            Store<State01> store = SimpleStoreFactory.Ins.CreateStore<State01 , Reducer01> ();
-            store.Subscribe (Reducer01.Reducer01MethodType.Func01 , (State01 s) =>
+            WindowNodeType<Window01 , State01> root = new WindowNodeType<Window01 , State01> (default , default ,
+                childCreator: (state , window) =>
+                {
+                    return default;
+                } ,
+                fillProps: (state , window , store) =>
+                {
+                    store.Subscribe ((s) =>
+                    {
+
+                    });
+                });
+
+            UIWinMgr.Ins.CreateRootNodeContainer (transform , new AWindowData ()
             {
-                Debug.LogWarning ("State01");
+                component = root
             });
 
-            store.Subscribe (Reducer01.Reducer01MethodType.Func02 , (s) =>
-            {
-                Debug.LogWarning ("State02");
-            });
+            //Store<State01> store = SimpleStoreFactory.Ins.CreateStore<State01 , Reducer01> ();
+            //store.Subscribe (Reducer01.Reducer01MethodType.Func01 , (State01 s) =>
+            //{
+            //    Debug.LogWarning ("State01");
+            //});
 
-            store.Subscribe (Reducer01.Reducer01MethodType.Func03 , (s) =>
-            {
-                Debug.LogWarning ("State03");
-            });
+            //store.Subscribe (Reducer01.Reducer01MethodType.Func02 , (s) =>
+            //{
+            //    Debug.LogWarning ("State02");
+            //});
 
-            store.DisPatch (Reducer01.Reducer01MethodType.Func01 , default);
-            store.DisPatch (Reducer01.Reducer01MethodType.Func02 , default);
-            store.DisPatch (Reducer01.Reducer01MethodType.Func03 , default);
+            //store.Subscribe (Reducer01.Reducer01MethodType.Func03 , (s) =>
+            //{
+            //    Debug.LogWarning ("State03");
+            //});
+
+            //store.DisPatch (Reducer01.Reducer01MethodType.Func01 , default);
+            //store.DisPatch (Reducer01.Reducer01MethodType.Func02 , default);
+            //store.DisPatch (Reducer01.Reducer01MethodType.Func03 , default);
 
             #region Pool Test
 

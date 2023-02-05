@@ -10,6 +10,7 @@ namespace MVI4Unity
         private GameObject _gameObject;
         private Transform _transform;
         private RectTransform _rectTransform;
+        protected object data;
 
         /// <summary>
         /// 设置实际游戏对象
@@ -21,6 +22,8 @@ namespace MVI4Unity
             _gameObject = gameObject;
             _transform = gameObject.transform;
             _rectTransform = gameObject.GetComponent<RectTransform> ();
+            this.data = data;
+            OnInit ();
         }
 
         /// <summary>
@@ -84,9 +87,9 @@ namespace MVI4Unity
         }
 
         /// <summary>
-        /// 打开
+        /// 初始化
         /// </summary>
-        protected virtual void Open ()
+        protected virtual void OnInit ()
         {
 
         }
@@ -94,7 +97,7 @@ namespace MVI4Unity
         /// <summary>
         /// 关闭
         /// </summary>
-        protected virtual void Close ()
+        protected virtual void OnClose ()
         {
 
         }

@@ -48,7 +48,7 @@ namespace MVI4Unity
         /// <param name="parent"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public T Create<T> (string assetPath , Transform parent = null , object data = null) where T : AWindow
+        public T Create<T> (string assetPath , Transform parent , object data = null) where T : AWindow
         {
             GameObject prefab = Resources.Load<GameObject> (assetPath);
             if ( prefab == default )
@@ -56,6 +56,11 @@ namespace MVI4Unity
                 Debug.LogError ($"assetPath[{assetPath}] 对应资源为空");
             }
             return Create<T> (prefab , parent , data);
+        }
+
+        public void CreateRootNodeContainer (Transform parent , AWindowData data)
+        {
+            Create<RootNodeContainer> ("RootNodeContainer" , parent , data);
         }
     }
 }

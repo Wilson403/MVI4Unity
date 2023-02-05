@@ -119,7 +119,6 @@ namespace MVI4Unity
             _callbackList.Add (callBackWarpper);
         }
 
-
         /// <summary>
         /// 触发回调
         /// </summary>
