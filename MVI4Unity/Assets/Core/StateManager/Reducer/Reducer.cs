@@ -23,7 +23,7 @@ namespace MVI4Unity
         /// <summary>
         /// 回调
         /// </summary>
-        CallBack = 3
+        CallBack = 3,
     }
 
     /// <summary>

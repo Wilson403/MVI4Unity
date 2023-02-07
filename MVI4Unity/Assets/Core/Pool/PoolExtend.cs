@@ -21,5 +21,10 @@ namespace MVI4Unity
         {
             PoolMgr.Ins.GetList<T> ().Push (poolType);
         }
+
+        public static void Push<T1, T2> (this Dictionary<T1 , T2> poolType)
+        {
+            PoolMgr.Ins.GetDict<T1 , T2> ().Push (poolType);
+        }
     }
 }

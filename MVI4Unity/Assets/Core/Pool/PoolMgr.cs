@@ -15,16 +15,16 @@ namespace MVI4Unity
         /// <typeparam name="T"></typeparam>
         /// <param name="poolType"></param>
         /// <returns></returns> 
-        public T Pop<T> (PoolType<T> poolType)
+        public T Pop<T> (IPoolType poolType)
         {
-            var storage = GetStorage (poolType);
+            var storage = GetStorage<T> (poolType);
             if ( storage.GetStoragedCount () > 0 )
             {
                 return ( T ) storage.Pop ();
             }
             else
             {
-                return poolType.Create ();
+                return ( T ) poolType.Create ();
             }
         }
 
@@ -36,7 +36,7 @@ namespace MVI4Unity
         /// <param name="item"></param>
         public void Push<T> (PoolType<T> poolType , T item)
         {
-            GetStorage (poolType).Push (item);
+            GetStorage<T> (poolType).Push (item);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace MVI4Unity
         /// <typeparam name="T"></typeparam>
         /// <param name="poolType"></param>
         /// <returns></returns>
-        private IPoolStorage GetStorage<T> (PoolType<T> poolType)
+        private IPoolStorage GetStorage<T> (IPoolType poolType)
         {
             if ( !_storageDict.ContainsKey (poolType) )
             {
@@ -87,6 +87,29 @@ namespace MVI4Unity
                     });
             }
             return _poolTypeDict [typeof (List<T>)] as PoolType<List<T>>;
+        }
+
+        /// <summary>
+        /// 针对Dict的池
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <returns></returns>
+        public PoolType<Dictionary<T1 , T2>> GetDict<T1, T2> ()
+        {
+            if ( !_poolTypeDict.ContainsKey (typeof (Dictionary<T1 , T2>)) )
+            {
+                _poolTypeDict [typeof (Dictionary<T1 , T2>)] = new PoolType<Dictionary<T1 , T2>> (
+                    onCreate: () =>
+                    {
+                        return new Dictionary<T1 , T2> ();
+                    } ,
+                    onPush: (t) =>
+                    {
+                        t.Clear ();
+                    });
+            }
+            return _poolTypeDict [typeof (Dictionary<T1 , T2>)] as PoolType<Dictionary<T1 , T2>>;
         }
 
         #endregion

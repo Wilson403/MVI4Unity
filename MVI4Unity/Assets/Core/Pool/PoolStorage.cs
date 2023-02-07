@@ -7,9 +7,9 @@ namespace MVI4Unity
         private readonly List<object> _storage = new List<object> ();
         private readonly PoolType<T> _poolType;
 
-        public PoolStorage (PoolType<T> poolType)
+        public PoolStorage (IPoolType poolType)
         {
-            _poolType = poolType;
+            _poolType = poolType as PoolType<T>;
         }
 
         public int GetStoragedCount ()

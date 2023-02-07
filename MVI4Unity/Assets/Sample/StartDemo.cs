@@ -6,7 +6,7 @@ namespace MVI4Unity
     {
         private void Awake ()
         {
-            WindowNodeType<Window01 , State01> root = new WindowNodeType<Window01 , State01> (default , default ,
+            WindowNodeType<Window01 , State01> root = new WindowNodeType<Window01 , State01> ("Windown01" , gameObject.transform ,
                 childCreator: (state , window) =>
                 {
                     return default;

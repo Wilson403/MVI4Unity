@@ -10,13 +10,11 @@ namespace MVI4Unity
         IReducer GetReducer<R> () where R : IReducer
         {
             var reducerRealType = typeof (R);
-            if ( _type2Reducer.ContainsKey (reducerRealType) )
+            if ( !_type2Reducer.ContainsKey (reducerRealType) )
             {
-                return _type2Reducer [reducerRealType];
+                _type2Reducer [reducerRealType] = Activator.CreateInstance<R> ();
             }
-            R reducer = Activator.CreateInstance<R> ();
-            _type2Reducer [reducerRealType] = reducer;
-            return reducer;
+            return _type2Reducer [reducerRealType];
         }
 
         public Store<S> CreateStore<S, R> () where S : AStateBase where R : IReducer

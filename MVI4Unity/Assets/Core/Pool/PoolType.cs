@@ -4,7 +4,7 @@ namespace MVI4Unity
 {
     public interface IPoolType
     {
-
+        object Create ();
     }
 
     public class PoolType<T> : IPoolType
@@ -23,6 +23,11 @@ namespace MVI4Unity
         public T Create ()
         {
             return onCreate.Invoke ();
+        }
+
+        object IPoolType.Create ()
+        {
+            return Create ();
         }
     }
 }

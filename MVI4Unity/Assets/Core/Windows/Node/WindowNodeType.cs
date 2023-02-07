@@ -26,12 +26,6 @@ namespace MVI4Unity
     public abstract class WindowNodeType
     {
         /// <summary>
-        /// 创建该节点类型的窗口
-        /// </summary>
-        /// <returns></returns>
-        public abstract AWindow CreateAWindow ();
-
-        /// <summary>
         /// 创建一个节点
         /// </summary>
         /// <returns></returns>
@@ -45,8 +39,24 @@ namespace MVI4Unity
         /// <returns></returns>
         public abstract List<ChildNodeVo> GetChildNodeList (AStateBase state , AWindow window);
 
-        //'public abstract void FillProps ();
+        /// <summary>
+        /// 获取AWindow池
+        /// </summary>
+        public abstract IPoolType GetAWindowPool ();
 
+        /// <summary>
+        /// 创建该节点类型的窗口
+        /// </summary>
+        /// <returns></returns>
+        public AWindow CreateAWindow ()
+        {
+            return PoolMgr.Ins.Pop<AWindow> (GetAWindowPool ());
+        }
+
+        /// <summary>
+        /// 获取根节点
+        /// </summary>
+        /// <returns></returns>
         public WindowNode GetRoot ()
         {
             return CreateWindowNode ();
@@ -115,9 +125,9 @@ namespace MVI4Unity
             _fillProps = fillProps;
         }
 
-        public override AWindow CreateAWindow ()
+        public override IPoolType GetAWindowPool ()
         {
-            return _windowPool != null ? _windowPool.Pop () : PoolMgr.Ins.GetAWindowPool<A> (_windowAssetPath , _container).Pop ();
+            return _windowPool ?? PoolMgr.Ins.GetAWindowPool<A> (_windowAssetPath , _container);
         }
 
         public override WindowNode CreateWindowNode ()
