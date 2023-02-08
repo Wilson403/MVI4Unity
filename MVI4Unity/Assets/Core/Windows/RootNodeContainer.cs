@@ -9,13 +9,15 @@ namespace MVI4Unity
     public class RootNodeContainer : AWindow
     {
         private readonly List<WindowNode> _currentNodes = new List<WindowNode> ();
+        private AWindowData _windowData;
 
         protected override void OnInit ()
         {
             base.OnInit ();
             if ( data is AWindowData windowData )
             {
-                Load (windowData.component.GetRoot ());
+                _windowData = windowData;
+                Load (_windowData.component.GetRoot ());
                 return;
             }
             Debug.LogError ($"数据类型异常[{data}]");
@@ -25,7 +27,7 @@ namespace MVI4Unity
         {
             List<WindowNode> newNodes = PoolMgr.Ins.GetList<WindowNode> ().Pop (); //从池里获取一个列表
             newNodes.Add (root);
-            WindowNodeDisputeResolver.Ins.ResolveDispute4List (_currentNodes , newNodes);
+            WindowNodeDisputeResolver.Ins.ResolveDispute4List (GameObject.transform , _windowData.state , _currentNodes , newNodes);
             newNodes.Push (); //列表用完回收
         }
     }

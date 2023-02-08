@@ -79,7 +79,7 @@ namespace MVI4Unity
                 _poolTypeDict [typeof (List<T>)] = new PoolType<List<T>> (
                     onCreate: () =>
                     {
-                        return new List<T> ();
+                        return new List<T> (0);
                     } ,
                     onPush: (t) =>
                     {

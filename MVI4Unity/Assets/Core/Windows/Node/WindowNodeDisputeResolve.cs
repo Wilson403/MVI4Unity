@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace MVI4Unity
 {
@@ -7,12 +8,15 @@ namespace MVI4Unity
         /// <summary>
         /// 解决视图节点冲突
         /// </summary>
+        /// <param name="container"></param>
+        /// <param name="state"></param>
+        /// <param name="window"></param>
         /// <param name="currNodes"></param>
         /// <param name="newNodes"></param>
-        public void ResolveDispute4List (List<WindowNode> currNodes , List<WindowNode> newNodes)
+        public void ResolveDispute4List (Transform container , AStateBase state , List<WindowNode> currNodes , List<WindowNode> newNodes)
         {
-            currNodes.RemoveAll (x => x== null);
-            newNodes.RemoveAll (x => x==null);
+            currNodes.RemoveAll (x => x == null);
+            newNodes.RemoveAll (x => x == null);
 
             //将当前节点列表转换为字典，方便索引
             Dictionary<int , WindowNode> id2WindowNode = PoolMgr.Ins.GetDict<int , WindowNode> ().Pop ();
@@ -46,7 +50,7 @@ namespace MVI4Unity
                 for ( int j = 0 ; j < currNodes.Count ; j++ )
                 {
                     WindowNode currNode = currNodes [j];
-                    if ( newNode.to == null && newNode.Equals (currNode) ) 
+                    if ( newNode.to == null && newNode.Equals (currNode) )
                     {
                         newNode.to = currNode;
                         currNode.from = newNode;
@@ -66,16 +70,28 @@ namespace MVI4Unity
 
                 }
                 //没有匹配到，插入到当前列表
-                else 
+                else
                 {
-                    newnode.windowNodeType.CreateAWindow ();
+                    AWindow window = newnode.windowNodeType.CreateAWindow (container);
+                    ResolveChildNodeDispute (newnode , state , window);
                 }
             }
         }
 
-        private void Insert () 
+        private void ResolveChildNodeDispute (WindowNode node , AStateBase state , AWindow window)
         {
+            List<ChildNodeVo> childNodes = node.windowNodeType.GetChildNodeList (state , window);
+            for ( int i = 0 ; i < childNodes.Count ; i++ )
+            {
+                ChildNodeVo vo = childNodes [i];
+                Transform container = vo.container;
 
+                for ( int j = 0 ; j < vo.allNodeList.Count ; j++ )
+                {
+                    WindowNode childNode = vo.allNodeList [j];
+                    ResolveDispute4List (container , state , new List<WindowNode> (0) , new List<WindowNode> () { childNode });
+                }
+            }
         }
     }
 }

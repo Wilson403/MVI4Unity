@@ -40,18 +40,17 @@ namespace MVI4Unity
         public abstract List<ChildNodeVo> GetChildNodeList (AStateBase state , AWindow window);
 
         /// <summary>
-        /// 获取AWindow池
-        /// </summary>
-        public abstract IPoolType GetAWindowPool ();
-
-        /// <summary>
         /// 创建该节点类型的窗口
         /// </summary>
+        /// <param name="container"></param>
         /// <returns></returns>
-        public AWindow CreateAWindow ()
-        {
-            return PoolMgr.Ins.Pop<AWindow> (GetAWindowPool ());
-        }
+        public abstract AWindow CreateAWindow (Transform container);
+
+        /// <summary>
+        /// 获取资源标签
+        /// </summary>
+        /// <returns></returns>
+        public abstract string GetResTag ();
 
         /// <summary>
         /// 获取根节点
@@ -92,7 +91,7 @@ namespace MVI4Unity
         /// <param name="state"></param>
         /// <param name="window"></param>
         /// <returns></returns>
-        public delegate List<ChildNodeVo> ChildCreator (AStateBase state , AWindow window);
+        public delegate List<ChildNodeVo> ChildCreator (S state , A window);
 
         /// <summary>
         /// 用于创建子节点的委托
@@ -100,10 +99,9 @@ namespace MVI4Unity
         /// <param name="state"></param>
         /// <param name="window"></param>
         /// <param name="store"></param>
-        public delegate void FillProps (AStateBase state , AWindow window , Store<S> store);
+        public delegate void FillProps (S state , A window , Store<S> store);
 
         private readonly string _windowAssetPath;
-        private readonly Transform _container;
         private readonly PoolType<A> _windowPool;
         private readonly ChildCreator _childCreator;
         private readonly FillProps _fillProps;
@@ -116,18 +114,17 @@ namespace MVI4Unity
         /// <param name="childCreator">子节点创建器</param>
         /// <param name="fillProps"></param>
         /// <param name="windowPool">可选，自定义窗口对象池</param>
-        public WindowNodeType (string windowAssetPath , Transform container , ChildCreator childCreator , FillProps fillProps , PoolType<A> windowPool = null)
+        public WindowNodeType (string windowAssetPath , ChildCreator childCreator , FillProps fillProps , PoolType<A> windowPool = null)
         {
             _windowAssetPath = windowAssetPath;
-            _container = container;
             _windowPool = windowPool;
             _childCreator = childCreator;
             _fillProps = fillProps;
         }
 
-        public override IPoolType GetAWindowPool ()
+        public override AWindow CreateAWindow (Transform container)
         {
-            return _windowPool ?? PoolMgr.Ins.GetAWindowPool<A> (_windowAssetPath , _container);
+            return ( _windowPool ?? PoolMgr.Ins.GetAWindowPool<A> (_windowAssetPath , container) ).Pop ();
         }
 
         public override WindowNode CreateWindowNode ()
@@ -143,7 +140,12 @@ namespace MVI4Unity
             {
                 return PoolMgr.Ins.GetList<ChildNodeVo> ().Pop ();
             }
-            return _childCreator.Invoke (state , window);
+            return _childCreator.Invoke (state as S , window as A);
+        }
+
+        public override string GetResTag ()
+        {
+            return _windowAssetPath;
         }
     }
 }

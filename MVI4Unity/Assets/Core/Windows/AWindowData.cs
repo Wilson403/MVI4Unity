@@ -6,5 +6,6 @@
     public class AWindowData
     {
         public WindowNodeType component;
+        public AStateBase state;
     }
 }

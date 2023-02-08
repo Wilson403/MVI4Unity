@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace MVI4Unity
 {
@@ -6,10 +7,33 @@ namespace MVI4Unity
     {
         private void Awake ()
         {
-            WindowNodeType<Window01 , State01> root = new WindowNodeType<Window01 , State01> ("Windown01" , gameObject.transform ,
+            WindowNodeType<WindowItem , State01> item = new WindowNodeType<WindowItem , State01> ("WindownItem" ,
+                childCreator: default,
+                fillProps: (state , window , store) =>
+                {
+                    store.Subscribe ((s) =>
+                    {
+
+                    });
+                });
+
+            WindowNodeType<Window01 , State01> root = new WindowNodeType<Window01 , State01> ("Windown01" ,
                 childCreator: (state , window) =>
                 {
-                    return default;
+                    List<ChildNodeVo> childNodeVos = PoolMgr.Ins.GetList<ChildNodeVo> ().Pop ();
+                    List<WindowNode> windowNodes = PoolMgr.Ins.GetList<WindowNode> ().Pop ();
+
+                    for ( int i = 0 ; i < 10 ; i++ )
+                    {
+                        windowNodes.Add (item.CreateWindowNode ());
+                    }
+
+                    childNodeVos.Add (new ChildNodeVo ()
+                    {
+                        container = window.GameObject.transform ,
+                        allNodeList = windowNodes
+                    });
+                    return childNodeVos;
                 } ,
                 fillProps: (state , window , store) =>
                 {

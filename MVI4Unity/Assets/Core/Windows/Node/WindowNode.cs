@@ -41,7 +41,7 @@ namespace MVI4Unity
         public bool Equals (WindowNode other)
         {
             //判断依据：节点类型对应的窗口池相同，即都是同一个预制体
-            return windowNodeType.GetAWindowPool ().Equals (other.windowNodeType.GetAWindowPool ());
+            return windowNodeType.GetResTag ().Equals (other.windowNodeType.GetResTag ());
         }
 
         public override string ToString ()

@@ -12,6 +12,14 @@ namespace MVI4Unity
         private RectTransform _rectTransform;
         protected object data;
 
+        public GameObject GameObject 
+        {
+            get 
+            {
+                return _gameObject;
+            }
+        }
+
         /// <summary>
         /// 设置实际游戏对象
         /// </summary>
