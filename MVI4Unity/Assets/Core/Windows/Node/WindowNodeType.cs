@@ -123,7 +123,9 @@ namespace MVI4Unity
 
         public override AWindow CreateAWindow (Transform container)
         {
-            return ( _windowPool ?? PoolMgr.Ins.GetAWindowPool<A> (_windowAssetPath , container) ).Pop ();
+            A window = ( _windowPool ?? PoolMgr.Ins.GetAWindowPool<A> (_windowAssetPath) ).Pop ();
+            window.SetParent (container);
+            return window;
         }
 
         public override WindowNode CreateWindowNode ()

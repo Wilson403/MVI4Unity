@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace MVI4Unity
 {
@@ -121,11 +120,10 @@ namespace MVI4Unity
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="windowPath"></param>
-        /// <param name="parent"></param>
         /// <returns></returns>
-        public AWindow PopAWindow<T> (string windowPath , Transform parent) where T : AWindow
+        public AWindow PopAWindow<T> (string windowPath) where T : AWindow
         {
-            return GetAWindowPool<T> (windowPath , parent).Pop ();
+            return GetAWindowPool<T> (windowPath).Pop ();
         }
 
         /// <summary>
@@ -140,15 +138,14 @@ namespace MVI4Unity
                 ( poolType as PoolType<T> ).Push (window);
             }
         }
-
+        
         /// <summary>
         /// 获取窗口对象池
         /// </summary>
         /// <typeparam name="T">该泛型类型被限制为AWindow</typeparam>
         /// <param name="windowPath">窗口预制体路径</param>
-        /// <param name="parent">父节点</param>
         /// <returns></returns>
-        public PoolType<T> GetAWindowPool<T> (string windowPath , Transform parent) where T : AWindow
+        public PoolType<T> GetAWindowPool<T> (string windowPath) where T : AWindow
         {
             Type windowType = typeof (T);
             if ( !_poolTypeDict.ContainsKey (windowType) )
@@ -156,7 +153,7 @@ namespace MVI4Unity
                 _poolTypeDict [windowType] = new PoolType<T> (
                     onCreate: () =>
                     {
-                        return UIWinMgr.Ins.Create<T> (windowPath , parent);
+                        return UIWinMgr.Ins.Create<T> (windowPath , null);
                     } ,
                     onPop: default ,
                     onPush: OnAWindowPush);
@@ -169,15 +166,14 @@ namespace MVI4Unity
         /// </summary>
         /// <typeparam name="T">该泛型类型被限制为AWindow</typeparam>
         /// <param name="windowPath">窗口预制体路径</param>
-        /// <param name="parent">父节点</param>
-        /// <param name="onCreate">创建方式（替换默认方式）</param>
+        /// <param name="onCreate">创建方式（替换默认方式</param>
         /// <param name="onPop">弹出监听</param>
         /// <param name="onPush">回收监听</param>
         /// <returns></returns>
-        public PoolType<T> GetAWindowPool<T> (string windowPath , Transform parent , Func<T> onCreate = null , Action onPop = null , Action<T> onPush = null) where T : AWindow
+        public PoolType<T> GetAWindowPool<T> (string windowPath , Func<T> onCreate = null , Action onPop = null , Action<T> onPush = null) where T : AWindow
         {
             Type windowType = typeof (T);
-            onCreate = onCreate ?? ( () => { return UIWinMgr.Ins.Create<T> (windowPath , parent); } );
+            onCreate = onCreate ?? ( () => { return UIWinMgr.Ins.Create<T> (windowPath , null); } );
             if ( !_poolTypeDict.ContainsKey (windowType) )
             {
                 _poolTypeDict [windowType] = new PoolType<T> (

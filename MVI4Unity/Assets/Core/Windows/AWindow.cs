@@ -61,6 +61,8 @@ namespace MVI4Unity
         public void SetParent (Transform parent)
         {
             _transform.SetParent (parent);
+            _transform.localScale = Vector3.one;
+            _transform.localPosition = Vector3.zero;
         }
 
         /// <summary>

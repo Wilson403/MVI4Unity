@@ -5,6 +5,9 @@ namespace MVI4Unity
     public class Window01 : AWindow
     {
         [AWindowCom ("container1")]
-        public Transform container;
+        public Transform container1;
+
+        [AWindowCom ("container2")]
+        public Transform container2;
     }
 }

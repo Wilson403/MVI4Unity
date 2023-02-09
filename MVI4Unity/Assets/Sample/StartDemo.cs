@@ -22,16 +22,23 @@ namespace MVI4Unity
                     List<ChildNodeVo> childNodeVos = PoolMgr.Ins.GetList<ChildNodeVo> ().Pop ();
                     List<WindowNode> windowNodes = PoolMgr.Ins.GetList<WindowNode> ().Pop ();
 
-                    for ( int i = 0 ; i < 10 ; i++ )
+                    for ( int i = 0 ; i < 5 ; i++ )
                     {
                         windowNodes.Add (item.CreateWindowNode ());
                     }
 
                     childNodeVos.Add (new ChildNodeVo ()
                     {
-                        container = window.container,
+                        container = window.container1,
                         allNodeList = windowNodes
                     });
+
+                    childNodeVos.Add (new ChildNodeVo ()
+                    {
+                        container = window.container2 ,
+                        allNodeList = windowNodes
+                    });
+
                     return childNodeVos;
                 } ,
                 fillProps: (state , window , store) =>
