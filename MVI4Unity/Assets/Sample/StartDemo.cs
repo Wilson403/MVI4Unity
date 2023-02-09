@@ -8,7 +8,6 @@ namespace MVI4Unity
         private void Awake ()
         {
             WindowNodeType<WindowItem , State01> item = new WindowNodeType<WindowItem , State01> ("WindownItem" ,
-                childCreator: default,
                 fillProps: (state , window , store) =>
                 {
                     store.Subscribe ((s) =>
@@ -30,7 +29,7 @@ namespace MVI4Unity
 
                     childNodeVos.Add (new ChildNodeVo ()
                     {
-                        container = window.GameObject.transform ,
+                        container = window.container,
                         allNodeList = windowNodes
                     });
                     return childNodeVos;

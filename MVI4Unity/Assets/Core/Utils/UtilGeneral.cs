@@ -41,5 +41,22 @@ namespace MVI4Unity
             @delegate = null;
             return false;
         }
+
+        public IEnumerable<Type> GetBaseClasses (Type type , bool includeSelf = false)
+        {
+            if ( type is object && type.BaseType is object )
+            {
+                if ( includeSelf )
+                {
+                    yield return type;
+                }
+                Type current = type.BaseType;
+                while ( current is object )
+                {
+                    yield return current;
+                    current = current.BaseType;
+                }
+            }
+        }
     }
 }

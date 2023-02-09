@@ -109,12 +109,11 @@ namespace MVI4Unity
         /// <summary>
         /// 构造节点信息
         /// </summary>
-        /// <param name="windowAssetPath">窗口路径</param>
-        /// <param name="container">容器，窗口父节点</param>
-        /// <param name="childCreator">子节点创建器</param>
+        /// <param name="windowAssetPath"></param>
         /// <param name="fillProps"></param>
-        /// <param name="windowPool">可选，自定义窗口对象池</param>
-        public WindowNodeType (string windowAssetPath , ChildCreator childCreator , FillProps fillProps , PoolType<A> windowPool = null)
+        /// <param name="childCreator"></param>
+        /// <param name="windowPool"></param>
+        public WindowNodeType (string windowAssetPath , FillProps fillProps , ChildCreator childCreator = default , PoolType<A> windowPool = null)
         {
             _windowAssetPath = windowAssetPath;
             _windowPool = windowPool;
