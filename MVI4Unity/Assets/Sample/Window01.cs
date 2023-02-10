@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace MVI4Unity
 {
@@ -9,5 +10,8 @@ namespace MVI4Unity
 
         [AWindowCom ("container2")]
         public Transform container2;
+
+        [AWindowCom ("btn")]
+        public Button btn;
     }
 }

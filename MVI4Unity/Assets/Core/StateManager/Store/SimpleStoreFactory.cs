@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace MVI4Unity
 {
+    /// <summary>
+    /// Store简单工厂  
+    /// </summary>
     public class SimpleStoreFactory : SafeSingleton<SimpleStoreFactory>
     {
         readonly Dictionary<Type , IReducer> _type2Reducer = new Dictionary<Type , IReducer> ();

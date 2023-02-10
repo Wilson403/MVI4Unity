@@ -8,12 +8,9 @@ namespace MVI4Unity
         private void Awake ()
         {
             WindowNodeType<WindowItem , State01> item = new WindowNodeType<WindowItem , State01> ("WindownItem" ,
-                fillProps: (state , window , store) =>
+                fillProps: (state , window) =>
                 {
-                    store.Subscribe ((s) =>
-                    {
 
-                    });
                 });
 
             WindowNodeType<Window01 , State01> root = new WindowNodeType<Window01 , State01> ("Windown01" ,
@@ -22,14 +19,14 @@ namespace MVI4Unity
                     List<ChildNodeVo> childNodeVos = PoolMgr.Ins.GetList<ChildNodeVo> ().Pop ();
                     List<WindowNode> windowNodes = PoolMgr.Ins.GetList<WindowNode> ().Pop ();
 
-                    for ( int i = 0 ; i < 5 ; i++ )
+                    for ( int i = 0 ; i < state.count ; i++ )
                     {
                         windowNodes.Add (item.CreateWindowNode ());
                     }
 
                     childNodeVos.Add (new ChildNodeVo ()
                     {
-                        container = window.container1,
+                        container = window.container1 ,
                         allNodeList = windowNodes
                     });
 
@@ -41,17 +38,14 @@ namespace MVI4Unity
 
                     return childNodeVos;
                 } ,
-                fillProps: (state , window , store) =>
+                fillProps: (state , window) =>
                 {
-                    store.Subscribe ((s) =>
-                    {
 
-                    });
                 });
 
-            UIWinMgr.Ins.CreateRootNodeContainer (transform , new AWindowData ()
+            UIWinMgr.Ins.CreateRootNodeContainer<State01 , Reducer01> (transform , new AWindowData ()
             {
-                component = root
+                component = root ,
             });
 
             //Store<State01> store = SimpleStoreFactory.Ins.CreateStore<State01 , Reducer01> ();

@@ -53,6 +53,13 @@ namespace MVI4Unity
         public abstract string GetResTag ();
 
         /// <summary>
+        /// 填充属性
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="state"></param>
+        public abstract void FillProps (AWindow window , AStateBase state);
+
+        /// <summary>
         /// 获取根节点
         /// </summary>
         /// <returns></returns>
@@ -93,18 +100,10 @@ namespace MVI4Unity
         /// <returns></returns>
         public delegate List<ChildNodeVo> ChildCreator (S state , A window);
 
-        /// <summary>
-        /// 用于创建子节点的委托
-        /// </summary>
-        /// <param name="state"></param>
-        /// <param name="window"></param>
-        /// <param name="store"></param>
-        public delegate void FillProps (S state , A window , Store<S> store);
-
         private readonly string _windowAssetPath;
         private readonly PoolType<A> _windowPool;
         private readonly ChildCreator _childCreator;
-        private readonly FillProps _fillProps;
+        private readonly Action<S , A> _fillProps;
 
         /// <summary>
         /// 构造节点信息
@@ -113,7 +112,7 @@ namespace MVI4Unity
         /// <param name="fillProps"></param>
         /// <param name="childCreator"></param>
         /// <param name="windowPool"></param>
-        public WindowNodeType (string windowAssetPath , FillProps fillProps , ChildCreator childCreator = default , PoolType<A> windowPool = null)
+        public WindowNodeType (string windowAssetPath , Action<S , A> fillProps , ChildCreator childCreator = default , PoolType<A> windowPool = null)
         {
             _windowAssetPath = windowAssetPath;
             _windowPool = windowPool;
@@ -142,6 +141,11 @@ namespace MVI4Unity
                 return PoolMgr.Ins.GetList<ChildNodeVo> ().Pop ();
             }
             return _childCreator.Invoke (state as S , window as A);
+        }
+
+        public override void FillProps (AWindow window , AStateBase state)
+        {
+            _fillProps?.Invoke (state as S , window as A);
         }
 
         public override string GetResTag ()

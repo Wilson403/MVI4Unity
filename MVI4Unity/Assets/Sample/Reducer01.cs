@@ -6,7 +6,7 @@ namespace MVI4Unity
 {
     public class State01 : AStateBase
     {
-
+        public int count;
     }
 
     public class Reducer01 : Reducer<State01 , Reducer01.Reducer01MethodType>
@@ -21,7 +21,9 @@ namespace MVI4Unity
         [ReducerMethod (( int ) Reducer01MethodType.Func01 , true)]
         private State01 Func01 (State01 oldState , object @param)
         {
-            return new State01 ();
+            State01 state01 = new State01 ();
+            state01.count = oldState != default ? oldState.count + 1 : 1;
+            return state01;
         }
 
         [ReducerMethod (( int ) Reducer01MethodType.Func02)]

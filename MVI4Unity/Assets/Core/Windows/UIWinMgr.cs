@@ -58,9 +58,9 @@ namespace MVI4Unity
             return Create<T> (prefab , parent , data);
         }
 
-        public void CreateRootNodeContainer (Transform parent , AWindowData data)
+        public void CreateRootNodeContainer<S, R> (Transform parent , AWindowData data) where S : AStateBase where R : IReducer
         {
-            Create<RootNodeContainer> ("RootNodeContainer" , parent , data);
+            Create<RootNodeContainer<S , R>> ("RootNodeContainer" , parent , data);
         }
     }
 }

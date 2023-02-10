@@ -73,6 +73,7 @@ namespace MVI4Unity
                 else
                 {
                     AWindow window = newnode.windowNodeType.CreateAWindow (container);
+                    newnode.windowNodeType.FillProps (window , state);
                     ResolveChildNodeDispute (newnode , state , window);
                 }
             }
