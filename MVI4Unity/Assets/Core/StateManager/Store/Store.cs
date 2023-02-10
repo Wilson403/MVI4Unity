@@ -103,7 +103,7 @@ namespace MVI4Unity
             for ( int i = 0 ; i < _callbackList.Count ; i++ )
             {
                 Action<S> callback = _callbackList [i];
-                _currentState.currentFunTag = tag.GetHashCode ();
+                _currentState.currentFunTag = tag != default ? tag.GetHashCode () : _currentState.currentFunTag;
                 callback?.Invoke (_currentState);
             }
         }
@@ -137,6 +137,36 @@ namespace MVI4Unity
         private S GetCurrentState ()
         {
             return _currentState;
+        }
+
+        /// <summary>
+        /// 是否初始化了状态
+        /// </summary>
+        private bool _isInitState = false;
+
+        /// <summary>
+        /// 初始化状态
+        /// </summary>
+        public void InitState ()
+        {
+            if ( _isInitState )
+            {
+                return;
+            }
+            _isInitState = true;
+
+            //如果一个初始函数都没有，那么手动创建一个状态实例
+            if ( _reducer.GetFirstAutoExecuteList ().Count == 0 )
+            {
+                SetNewState (default , Activator.CreateInstance<S> ());
+                return;
+            }
+
+            //执行初始函数来初始化状态实例
+            for ( int i = 0 ; i < _reducer.GetFirstAutoExecuteList ().Count ; i++ )
+            {
+                DisPatch (_reducer.GetFirstAutoExecuteList () [i] , default);
+            }
         }
 
         #endregion

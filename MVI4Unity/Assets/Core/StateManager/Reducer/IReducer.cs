@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MVI4Unity
@@ -38,5 +39,11 @@ namespace MVI4Unity
         /// <param name="param"></param>
         /// <returns></returns>
         object Execute (Enum tag , object lastState , object @param);
+
+        /// <summary>
+        /// 获取自动执行列表
+        /// </summary>
+        /// <returns></returns>
+        List<Enum> GetFirstAutoExecuteList ();
     }
 }

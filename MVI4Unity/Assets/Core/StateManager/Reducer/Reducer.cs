@@ -36,6 +36,7 @@ namespace MVI4Unity
         private readonly Dictionary<string , Store<S>.Reducer> _tag2Method = new Dictionary<string , Store<S>.Reducer> ();
         private readonly Dictionary<string , Store<S>.AsyncReducer> _tag2AsyncMethod = new Dictionary<string , Store<S>.AsyncReducer> ();
         private readonly Dictionary<string , Store<S>.CallbackReducer> _tag2Callback = new Dictionary<string , Store<S>.CallbackReducer> ();
+        private readonly List<Enum> _firstAutoExecuteList = new List<Enum> ();
 
         public Reducer ()
         {
@@ -55,6 +56,9 @@ namespace MVI4Unity
                 if ( attr != null )
                 {
                     Enum tag = Enum.ToObject (typeof (E) , attr.methodTag) as Enum;
+
+                    if ( attr.firstAutoExecute )
+                        GetFirstAutoExecuteList ().Add (tag);
 
                     if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.Reducer reducer) )
                         AddMethod (tag , reducer);
@@ -153,9 +157,14 @@ namespace MVI4Unity
             return null;
         }
 
+        public List<Enum> GetFirstAutoExecuteList ()
+        {
+            return _firstAutoExecuteList;
+        }
+
         public ReducerExecuteType GetReducerExecuteType (Enum tag)
         {
-            string @enum = GetEnumName (tag);
+            var @enum = GetEnumName (tag);
             if ( _tag2Method.ContainsKey (@enum) )
             {
                 return ReducerExecuteType.Synchronize;

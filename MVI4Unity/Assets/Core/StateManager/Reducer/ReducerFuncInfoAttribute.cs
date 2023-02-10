@@ -11,14 +11,14 @@ namespace MVI4Unity
         public int methodTag;
 
         /// <summary>
-        /// 是否自动执行
+        /// 首次自动执行
         /// </summary>
-        public bool autoExecute;
+        public bool firstAutoExecute;
 
-        public ReducerMethodAttribute (int funcTag , bool autoExecute = false)
+        public ReducerMethodAttribute (int funcTag , bool firstAutoExecute = false)
         {
             this.methodTag = funcTag;
-            this.autoExecute = autoExecute;
+            this.firstAutoExecute = firstAutoExecute;
         }
     }
 }
