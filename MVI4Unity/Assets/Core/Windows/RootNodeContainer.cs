@@ -21,9 +21,9 @@ namespace MVI4Unity
             {
                 _windowData = windowData;
                 Load (_windowData.component.GetRoot () , Activator.CreateInstance<S> ());
-                _store.Subscribe ((s) =>
+                _store.Subscribe ((state) =>
                 {
-                    Load (_windowData.component.GetRoot () , s);
+                    Load (_windowData.component.GetRoot () , state);
                 });
                 return;
             }
@@ -34,7 +34,7 @@ namespace MVI4Unity
         {
             List<WindowNode> newNodes = PoolMgr.Ins.GetList<WindowNode> ().Pop (); //从池里获取一个列表
             newNodes.Add (root);
-            WindowNodeDisputeResolver.Ins.ResolveDispute4List (GameObject.transform , state , _currentNodes , newNodes);
+            WindowNodeDisputeResolver.Ins.ResolveDispute4List (GameObject.transform , state , _store , _currentNodes , newNodes);
             newNodes.Push (); //列表用完回收
         }
     }

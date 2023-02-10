@@ -5,15 +5,6 @@ using UnityEngine;
 
 namespace MVI4Unity
 {
-    /// <summary>
-    /// 回调包装
-    /// </summary>
-    /// <typeparam name="S"></typeparam>
-    public class CallBackWarpper<S> where S : AStateBase
-    {
-        public Enum tag;
-        public Action<S> callback;
-    }
 
     public class Store<S> : IStore where S : AStateBase
     {
@@ -22,7 +13,7 @@ namespace MVI4Unity
         /// <summary>
         /// 回调集合
         /// </summary>
-        private readonly List<CallBackWarpper<S>> _callbackList = new List<CallBackWarpper<S>> ();
+        private readonly List<Action<S>> _callbackList = new List<Action<S>> ();
 
         /// <summary>
         /// 同步委托
@@ -52,7 +43,7 @@ namespace MVI4Unity
         /// 添加Reducer
         /// </summary>
         /// <param name="reducer"></param>
-        public void AddReducer (IReducer reducer) 
+        public void AddReducer (IReducer reducer)
         {
             _reducer = reducer;
         }
@@ -97,25 +88,10 @@ namespace MVI4Unity
         /// <summary>
         /// 订阅
         /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="callback"></param>
-        public void Subscribe (Enum tag , Action<S> callback)
-        {
-            CallBackWarpper<S> callBackWarpper = new CallBackWarpper<S> ();
-            callBackWarpper.callback = callback;
-            callBackWarpper.tag = tag;
-            _callbackList.Add (callBackWarpper);
-        }
-
-        /// <summary>
-        /// 订阅
-        /// </summary>
         /// <param name="callback"></param>
         public void Subscribe (Action<S> callback)
         {
-            CallBackWarpper<S> callBackWarpper = new CallBackWarpper<S> ();
-            callBackWarpper.callback = callback;
-            _callbackList.Add (callBackWarpper);
+            _callbackList.Add (callback);
         }
 
         /// <summary>
@@ -126,11 +102,9 @@ namespace MVI4Unity
         {
             for ( int i = 0 ; i < _callbackList.Count ; i++ )
             {
-                CallBackWarpper<S> callBackWarpper = _callbackList [i];
-                if ( callBackWarpper.tag == null || tag.GetHashCode () == callBackWarpper.tag.GetHashCode () )
-                {
-                    callBackWarpper.callback?.Invoke (_currentState);
-                }
+                Action<S> callback = _callbackList [i];
+                _currentState.currentFunTag = tag.GetHashCode ();
+                callback?.Invoke (_currentState);
             }
         }
 

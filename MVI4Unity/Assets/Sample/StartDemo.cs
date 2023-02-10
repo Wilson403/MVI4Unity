@@ -8,7 +8,7 @@ namespace MVI4Unity
         private void Awake ()
         {
             WindowNodeType<WindowItem , State01> item = new WindowNodeType<WindowItem , State01> ("WindownItem" ,
-                fillProps: (state , window) =>
+                fillProps: (state , window , store) =>
                 {
 
                 });
@@ -38,35 +38,16 @@ namespace MVI4Unity
 
                     return childNodeVos;
                 } ,
-                fillProps: (state , window) =>
+                fillProps: (state , window , store) =>
                 {
-
+                    Debug.LogWarning ($"{state.currentFunTag}");
+                    window.btn.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func02, default); });
                 });
 
             UIWinMgr.Ins.CreateRootNodeContainer<State01 , Reducer01> (transform , new AWindowData ()
             {
                 component = root ,
             });
-
-            //Store<State01> store = SimpleStoreFactory.Ins.CreateStore<State01 , Reducer01> ();
-            //store.Subscribe (Reducer01.Reducer01MethodType.Func01 , (State01 s) =>
-            //{
-            //    Debug.LogWarning ("State01");
-            //});
-
-            //store.Subscribe (Reducer01.Reducer01MethodType.Func02 , (s) =>
-            //{
-            //    Debug.LogWarning ("State02");
-            //});
-
-            //store.Subscribe (Reducer01.Reducer01MethodType.Func03 , (s) =>
-            //{
-            //    Debug.LogWarning ("State03");
-            //});
-
-            //store.DisPatch (Reducer01.Reducer01MethodType.Func01 , default);
-            //store.DisPatch (Reducer01.Reducer01MethodType.Func02 , default);
-            //store.DisPatch (Reducer01.Reducer01MethodType.Func03 , default);
 
             #region Pool Test
 

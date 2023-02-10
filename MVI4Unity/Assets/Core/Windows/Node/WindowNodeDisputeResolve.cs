@@ -13,7 +13,7 @@ namespace MVI4Unity
         /// <param name="window"></param>
         /// <param name="currNodes"></param>
         /// <param name="newNodes"></param>
-        public void ResolveDispute4List (Transform container , AStateBase state , List<WindowNode> currNodes , List<WindowNode> newNodes)
+        public void ResolveDispute4List (Transform container , AStateBase state , IStore store , List<WindowNode> currNodes , List<WindowNode> newNodes)
         {
             currNodes.RemoveAll (x => x == null);
             newNodes.RemoveAll (x => x == null);
@@ -73,13 +73,13 @@ namespace MVI4Unity
                 else
                 {
                     AWindow window = newnode.windowNodeType.CreateAWindow (container);
-                    newnode.windowNodeType.FillProps (window , state);
-                    ResolveChildNodeDispute (newnode , state , window);
+                    newnode.windowNodeType.FillProps (window , state , store);
+                    ResolveChildNodeDispute (newnode , state , window , store);
                 }
             }
         }
 
-        private void ResolveChildNodeDispute (WindowNode node , AStateBase state , AWindow window)
+        private void ResolveChildNodeDispute (WindowNode node , AStateBase state , AWindow window , IStore store)
         {
             List<ChildNodeVo> childNodes = node.windowNodeType.GetChildNodeList (state , window);
             for ( int i = 0 ; i < childNodes.Count ; i++ )
@@ -90,7 +90,7 @@ namespace MVI4Unity
                 for ( int j = 0 ; j < vo.allNodeList.Count ; j++ )
                 {
                     WindowNode childNode = vo.allNodeList [j];
-                    ResolveDispute4List (container , state , new List<WindowNode> (0) , new List<WindowNode> () { childNode });
+                    ResolveDispute4List (container , state , store , new List<WindowNode> (0) , new List<WindowNode> () { childNode });
                 }
             }
         }

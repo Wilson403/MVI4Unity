@@ -57,7 +57,8 @@ namespace MVI4Unity
         /// </summary>
         /// <param name="window"></param>
         /// <param name="state"></param>
-        public abstract void FillProps (AWindow window , AStateBase state);
+        /// <param name="store"></param>
+        public abstract void FillProps (AWindow window , AStateBase state, IStore store);
 
         /// <summary>
         /// 获取根节点
@@ -103,7 +104,7 @@ namespace MVI4Unity
         private readonly string _windowAssetPath;
         private readonly PoolType<A> _windowPool;
         private readonly ChildCreator _childCreator;
-        private readonly Action<S , A> _fillProps;
+        private readonly Action<S , A , IStore> _fillProps;
 
         /// <summary>
         /// 构造节点信息
@@ -112,7 +113,7 @@ namespace MVI4Unity
         /// <param name="fillProps"></param>
         /// <param name="childCreator"></param>
         /// <param name="windowPool"></param>
-        public WindowNodeType (string windowAssetPath , Action<S , A> fillProps , ChildCreator childCreator = default , PoolType<A> windowPool = null)
+        public WindowNodeType (string windowAssetPath , Action<S , A , IStore> fillProps , ChildCreator childCreator = default , PoolType<A> windowPool = null)
         {
             _windowAssetPath = windowAssetPath;
             _windowPool = windowPool;
@@ -143,9 +144,9 @@ namespace MVI4Unity
             return _childCreator.Invoke (state as S , window as A);
         }
 
-        public override void FillProps (AWindow window , AStateBase state)
+        public override void FillProps (AWindow window , AStateBase state , IStore store)
         {
-            _fillProps?.Invoke (state as S , window as A);
+            _fillProps?.Invoke (state as S , window as A , store);
         }
 
         public override string GetResTag ()
