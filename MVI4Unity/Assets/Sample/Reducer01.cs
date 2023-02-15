@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace MVI4Unity
 {
@@ -23,7 +22,6 @@ namespace MVI4Unity
         [ReducerMethod (( int ) Reducer01MethodType.Init , true)]
         private State01 InitState (State01 oldState , object @param)
         {
-            Debug.LogWarning ("Init");
             State01 state01 = new State01 ();
             state01.count = 10;
             return state01;

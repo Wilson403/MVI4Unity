@@ -12,9 +12,9 @@ namespace MVI4Unity
             return PoolMgr.Ins.Pop<T> (poolType);
         }
 
-        public static void Push<T> (this PoolType<T> poolType , T item)
+        public static void Push<T> (this IPoolType poolType , T item)
         {
-            PoolMgr.Ins.Push<T> (poolType , item);
+            PoolMgr.Ins.Push (poolType , item);
         }
 
         public static void Push<T> (this List<T> poolType)

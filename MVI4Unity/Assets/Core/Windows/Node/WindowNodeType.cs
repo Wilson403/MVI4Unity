@@ -5,22 +5,6 @@ using UnityEngine;
 namespace MVI4Unity
 {
     /// <summary>
-    /// 子节点信息
-    /// </summary>
-    public struct ChildNodeVo
-    {
-        /// <summary>
-        /// 子节点们的容器
-        /// </summary>
-        public Transform container;
-
-        /// <summary>
-        /// 全部子节点
-        /// </summary>
-        public List<WindowNode> allNodeList;
-    }
-
-    /// <summary>
     /// 节点类型
     /// </summary>
     public abstract class WindowNodeType
@@ -28,16 +12,16 @@ namespace MVI4Unity
         /// <summary>
         /// 创建一个节点
         /// </summary>
+        /// <param name="state"></param>
         /// <returns></returns>
-        public abstract WindowNode CreateWindowNode ();
+        public abstract WindowNode CreateWindowNode (AStateBase state);
 
         /// <summary>
-        /// 获取子节点信息列表
+        /// 获取容器列表
         /// </summary>
-        /// <param name="state"></param>
         /// <param name="window"></param>
         /// <returns></returns>
-        public abstract List<ChildNodeVo> GetChildNodeList (AStateBase state , AWindow window);
+        public abstract List<Transform> GetContainerList (AWindow window);
 
         /// <summary>
         /// 创建该节点类型的窗口
@@ -58,15 +42,16 @@ namespace MVI4Unity
         /// <param name="window"></param>
         /// <param name="state"></param>
         /// <param name="store"></param>
-        public abstract void FillProps (AWindow window , AStateBase state, IStore store);
+        public abstract void FillProps (AWindow window , AStateBase state , IStore store);
 
         /// <summary>
         /// 获取根节点
         /// </summary>
+        /// <param name="state"></param>
         /// <returns></returns>
-        public WindowNode GetRoot ()
+        public WindowNode GetRoot (AStateBase state)
         {
-            return CreateWindowNode ();
+            return CreateWindowNode (state);
         }
     }
 
@@ -93,17 +78,10 @@ namespace MVI4Unity
             public Action<A , S> fillProps;
         }
 
-        /// <summary>
-        /// 用于创建子节点的委托
-        /// </summary>
-        /// <param name="state"></param>
-        /// <param name="window"></param>
-        /// <returns></returns>
-        public delegate List<ChildNodeVo> ChildCreator (S state , A window);
-
         private readonly string _windowAssetPath;
         private readonly PoolType<A> _windowPool;
-        private readonly ChildCreator _childCreator;
+        private readonly Func<A , List<Transform>> _containerCreator;
+        private readonly Func<S , List<List<WindowNode>>> _childNodeCreator;
         private readonly Action<S , A , IStore> _fillProps;
 
         /// <summary>
@@ -111,37 +89,46 @@ namespace MVI4Unity
         /// </summary>
         /// <param name="windowAssetPath"></param>
         /// <param name="fillProps"></param>
-        /// <param name="childCreator"></param>
+        /// <param name="containerCreator"></param>
+        /// <param name="childNodeCreator"></param>
         /// <param name="windowPool"></param>
-        public WindowNodeType (string windowAssetPath , Action<S , A , IStore> fillProps , ChildCreator childCreator = default , PoolType<A> windowPool = null)
+        public WindowNodeType (
+            string windowAssetPath ,
+            Action<S , A , IStore> fillProps ,
+            Func<A , List<Transform>> containerCreator = default ,
+            Func<S , List<List<WindowNode>>> childNodeCreator = default ,
+            PoolType<A> windowPool = null)
         {
             _windowAssetPath = windowAssetPath;
             _windowPool = windowPool;
-            _childCreator = childCreator;
+            _containerCreator = containerCreator;
+            _childNodeCreator = childNodeCreator;
             _fillProps = fillProps;
         }
 
         public override AWindow CreateAWindow (Transform container)
         {
-            A window = ( _windowPool ?? PoolMgr.Ins.GetAWindowPool<A> (_windowAssetPath) ).Pop ();
+            AWindow window = ( _windowPool ?? PoolMgr.Ins.GetAWindowPool<A> (_windowAssetPath) ).Pop ();
             window.SetParent (container);
             return window;
         }
 
-        public override WindowNode CreateWindowNode ()
+        public override WindowNode CreateWindowNode (AStateBase state)
         {
             WindowNode node = PoolMgr.Ins.GetWindowNodePool ().Pop ();
-            node.windowNodeType = this;
+            node.SetWindowNodeType (this);
+            node.childNodeGroup.Clear ();
+            node.childNodeGroup.AddRange (_childNodeCreator == null ? PoolMgr.Ins.GetList<List<WindowNode>> ().Pop () : _childNodeCreator.Invoke (state as S));
             return node;
         }
 
-        public override List<ChildNodeVo> GetChildNodeList (AStateBase state , AWindow window)
+        public override List<Transform> GetContainerList (AWindow window)
         {
-            if ( _childCreator == null )
+            if ( _containerCreator == null )
             {
-                return PoolMgr.Ins.GetList<ChildNodeVo> ().Pop ();
+                return PoolMgr.Ins.GetList<Transform> ().Pop ();
             }
-            return _childCreator.Invoke (state as S , window as A);
+            return _containerCreator.Invoke (window as A);
         }
 
         public override void FillProps (AWindow window , AStateBase state , IStore store)

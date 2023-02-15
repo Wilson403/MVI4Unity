@@ -8,8 +8,10 @@ namespace MVI4Unity
     /// </summary>
     public class RootNodeContainer<S, R> : AWindow where S : AStateBase where R : IReducer
     {
+        /// <summary>
+        /// 当前节点列表
+        /// </summary>
         private readonly List<WindowNode> _currentNodes = new List<WindowNode> ();
-        private AWindowData _windowData;
 
         protected override void OnInit ()
         {
@@ -17,13 +19,12 @@ namespace MVI4Unity
             Store<S> store = SimpleStoreFactory.Ins.CreateStore<S , R> ();
             if ( data is AWindowData windowData )
             {
-                _windowData = windowData;
                 store.Subscribe ((state) =>
                 {
-                    List<WindowNode> newNodes = PoolMgr.Ins.GetList<WindowNode> ().Pop (); //从池里获取一个列表
-                    newNodes.Add (_windowData.component.GetRoot ());
-                    WindowNodeDisputeResolver.Ins.ResolveDispute4List (GameObject.transform , state , store , _currentNodes , newNodes);
-                    newNodes.Push (); //列表用完回收
+                    List<WindowNode> newNodeList = PoolMgr.Ins.GetList<WindowNode> ().Pop (); //从池里获取一个列表
+                    newNodeList.Add (windowData.component.GetRoot (state));
+                    WindowNodeDisputeResolver.Ins.ResolveDispute4List (GameObject.transform , state , store , _currentNodes , newNodeList);
+                    newNodeList.Push (); //列表用完回收                    
                 });
                 store.InitState ();
                 return;

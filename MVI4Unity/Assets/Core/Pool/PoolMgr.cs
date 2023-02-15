@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace MVI4Unity
 {
@@ -33,7 +34,7 @@ namespace MVI4Unity
         /// <typeparam name="T"></typeparam>
         /// <param name="poolType"></param>
         /// <param name="item"></param>
-        public void Push<T> (PoolType<T> poolType , T item)
+        public void Push<T> (IPoolType poolType , T item)
         {
             GetStorage<T> (poolType).Push (item);
         }
@@ -133,10 +134,14 @@ namespace MVI4Unity
         /// <param name="window"></param>
         public void PushAWindow<T> (T window) where T : AWindow
         {
-            if ( _poolTypeDict.TryGetValue (typeof (T) , out var poolType) )
+            if ( _poolTypeDict.TryGetValue (window.GetType () , out IPoolType poolType) )
             {
-                ( poolType as PoolType<T> ).Push (window);
+                window.SetActive (false);
+                window.RemoveAllListeners ();
+                poolType.Push (window);
+                return;
             }
+            Debug.LogWarning ($"无法回收{window}");
         }
         
         /// <summary>
@@ -213,7 +218,10 @@ namespace MVI4Unity
                 _poolTypeDict [type] = new PoolType<WindowNode> (
                     onCreate: () => { return new WindowNode (); } ,
                     onPop: default ,
-                    onPush: default);
+                    onPush: (node) => 
+                    {
+                        node.childNodeGroup.Clear ();
+                    });
             }
             return _poolTypeDict [type] as PoolType<WindowNode>;
         }
