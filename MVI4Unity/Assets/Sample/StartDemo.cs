@@ -14,34 +14,31 @@ namespace MVI4Unity
                 });
 
             WindowNodeType<Window01 , State01> root = new WindowNodeType<Window01 , State01> ("Windown01" ,
-                childCreator: (state , window) =>
+                containerCreator: (window) =>
                 {
-                    List<ChildNodeVo> childNodeVos = PoolMgr.Ins.GetList<ChildNodeVo> ().Pop ();
-                    List<WindowNode> windowNodes = PoolMgr.Ins.GetList<WindowNode> ().Pop ();
+                    var containerList = PoolMgr.Ins.GetList<Transform> ().Pop ();
+                    containerList.Add (window.container1);
+                    containerList.Add (window.container2);
+                    return containerList;
+                } ,
+                childNodeCreator: (state) =>
+                {
+                    var childNodeGroup = PoolMgr.Ins.GetList<List<WindowNode>> ().Pop ();
+                    var childNodeList = PoolMgr.Ins.GetList<WindowNode> ().Pop ();
 
                     for ( int i = 0 ; i < state.count ; i++ )
                     {
-                        windowNodes.Add (item.CreateWindowNode ());
+                        childNodeList.Add (item.CreateWindowNode (state));
                     }
 
-                    childNodeVos.Add (new ChildNodeVo ()
-                    {
-                        container = window.container1 ,
-                        allNodeList = windowNodes
-                    });
+                    childNodeGroup.Add (childNodeList);
+                    childNodeGroup.Add (childNodeList);
 
-                    childNodeVos.Add (new ChildNodeVo ()
-                    {
-                        container = window.container2 ,
-                        allNodeList = windowNodes
-                    });
-
-                    return childNodeVos;
+                    return childNodeGroup;
                 } ,
                 fillProps: (state , window , store) =>
                 {
-                    Debug.LogWarning ($"{state.currentFunTag}");
-                    window.btn.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func01, default); });
+                    window.btn.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func01 , default); });
                 });
 
             UIWinMgr.Ins.CreateRootNodeContainer<State01 , Reducer01> (transform , new AWindowData ()

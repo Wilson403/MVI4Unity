@@ -24,7 +24,8 @@ namespace MVI4Unity
             {
                 WindowNode currNode = currNodes [i];
                 currNode.ClearRecord ();
-                if ( currNode == null )
+                //如果没有设置ID，就忽略转换过程
+                if ( currNode.id == default )
                 {
                     continue;
                 }
@@ -35,7 +36,11 @@ namespace MVI4Unity
             for ( int i = 0 ; i < newNodes.Count ; i++ )
             {
                 WindowNode newNode = newNodes [i];
-                if ( newNode.to == null && id2WindowNode.TryGetValue (newNode.id , out WindowNode currNode) && newNode.Equals (currNode) )
+
+                if ( newNode.id != default
+                    && newNode.to == null
+                    && id2WindowNode.TryGetValue (newNode.id , out WindowNode currNode)
+                    && newNode.Equals (currNode) )
                 {
                     newNode.to = currNode;
                     currNode.from = newNode;
@@ -58,7 +63,20 @@ namespace MVI4Unity
                 }
             }
 
-            //删除currNodes没有匹配上的元素
+            for ( int i = 0 ; i < currNodes.Count ; )
+            {
+                WindowNode currNode = currNodes [i];
+                if ( currNode.from == null )
+                {
+                    Debug.LogWarning (currNode);
+                    currNodes.RemoveAt (i);
+                    RecoveryWindow (currNode);
+                }
+                else
+                {
+                    i++;
+                }
+            }
 
             for ( int i = 0 ; i < newNodes.Count ; i++ )
             {
@@ -72,27 +90,59 @@ namespace MVI4Unity
                 //没有匹配到，插入到当前列表
                 else
                 {
-                    AWindow window = newnode.windowNodeType.CreateAWindow (container);
-                    newnode.windowNodeType.FillProps (window , state , store);
-                    ResolveChildNodeDispute (newnode , state , window , store);
+                    AWindow window = newnode.CreateAWindow (container);
+                    currNodes.Add (newnode);
+                    newnode.FillProps (window , state , store);
+                    ResolveChildNodeDispute (newnode.CloneShallow () , newnode , state , window , store);
                 }
             }
         }
 
-        private void ResolveChildNodeDispute (WindowNode node , AStateBase state , AWindow window , IStore store)
+        /// <summary>
+        /// 解决子节点冲突
+        /// </summary>
+        /// <param name="curNode"></param>
+        /// <param name="newNode"></param>
+        /// <param name="state"></param>
+        /// <param name="window"></param>
+        /// <param name="store"></param>
+        private void ResolveChildNodeDispute (WindowNode curNode , WindowNode newNode , AStateBase state , AWindow window , IStore store)
         {
-            List<ChildNodeVo> childNodes = node.windowNodeType.GetChildNodeList (state , window);
-            for ( int i = 0 ; i < childNodes.Count ; i++ )
+            List<Transform> newNodeContainerList = newNode.GetContainerList (window);
+            for ( int i = 0 ; i < newNodeContainerList.Count ; i++ )
             {
-                ChildNodeVo vo = childNodes [i];
-                Transform container = vo.container;
+                Transform container = newNodeContainerList [i];
 
-                for ( int j = 0 ; j < vo.allNodeList.Count ; j++ )
+                while ( newNode.childNodeGroup.Count <= i )
                 {
-                    WindowNode childNode = vo.allNodeList [j];
-                    ResolveDispute4List (container , state , store , new List<WindowNode> (0) , new List<WindowNode> () { childNode });
+                    newNode.childNodeGroup.Add (PoolMgr.Ins.GetList<WindowNode> ().Pop ());
+                }
+
+                while ( curNode.childNodeGroup.Count <= i )
+                {
+                    curNode.childNodeGroup.Add (PoolMgr.Ins.GetList<WindowNode> ().Pop ());
+                }
+
+                ResolveDispute4List (container , state , store , curNode.childNodeGroup [i] , newNode.childNodeGroup [i]);
+            }
+        }
+
+        /// <summary>
+        /// 回收窗口
+        /// </summary>
+        /// <param name="currentNode"></param>
+        private void RecoveryWindow (WindowNode currentNode)
+        {
+            List<Transform> containerList = currentNode.GetContainerList (currentNode.Window);
+            for ( int containerIndex = 0 ; containerIndex < containerList.Count ; containerIndex++ )
+            {
+                List<WindowNode> childList = currentNode.childNodeGroup [containerIndex];
+                for ( int childIndex = 0 ; childIndex < childList.Count ; childIndex++ )
+                {
+                    RecoveryWindow (childList [childIndex]);
                 }
             }
+            currentNode.Destory ();
         }
     }
 }

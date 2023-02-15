@@ -135,6 +135,8 @@ namespace MVI4Unity
         {
             if ( _poolTypeDict.TryGetValue (typeof (T) , out var poolType) )
             {
+                window.SetActive (false);
+                window.RemoveAllListeners ();
                 ( poolType as PoolType<T> ).Push (window);
             }
         }
@@ -213,7 +215,10 @@ namespace MVI4Unity
                 _poolTypeDict [type] = new PoolType<WindowNode> (
                     onCreate: () => { return new WindowNode (); } ,
                     onPop: default ,
-                    onPush: default);
+                    onPush: (node) => 
+                    {
+                        node.childNodeGroup.Clear ();
+                    });
             }
             return _poolTypeDict [type] as PoolType<WindowNode>;
         }

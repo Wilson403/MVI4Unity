@@ -3,6 +3,7 @@ using System.Reflection;
 using System;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.UI;
 
 namespace MVI4Unity
 {
@@ -15,6 +16,10 @@ namespace MVI4Unity
         private Transform _transform;
         private RectTransform _rectTransform;
         protected object data;
+
+        private readonly List<Button> _listButton = new List<Button> ();
+        private readonly List<ScrollRect> _listScroll = new List<ScrollRect> ();
+        private readonly List<Toggle> _listToggle = new List<Toggle> ();
 
         public GameObject GameObject
         {
@@ -31,6 +36,10 @@ namespace MVI4Unity
         /// <param name="data"></param>
         internal void SetGameObject (GameObject gameObject , object data = null)
         {
+            _listButton.AddRange (gameObject.GetComponents<Button> ());
+            _listScroll.AddRange (gameObject.GetComponents<ScrollRect> ());
+            _listToggle.AddRange (gameObject.GetComponents<Toggle> ());
+
             _gameObject = gameObject;
             _transform = gameObject.transform;
             _rectTransform = gameObject.GetComponent<RectTransform> ();
@@ -81,6 +90,39 @@ namespace MVI4Unity
         public string GetViewName ()
         {
             return _gameObject.name;
+        }
+
+        /// <summary>
+        /// 移除所有事件监听
+        /// </summary>
+        public void RemoveAllListeners ()
+        {
+            for ( int i = 0 ; i < _listButton.Count ; i++ )
+            {
+                if ( !_listButton [i] )
+                {
+                    continue;
+                }
+                _listButton [i].onClick.RemoveAllListeners ();
+            }
+
+            for ( int i = 0 ; i < _listScroll.Count ; i++ )
+            {
+                if ( !_listScroll [i] )
+                {
+                    continue;
+                }
+                _listScroll [i].onValueChanged.RemoveAllListeners ();
+            }
+
+            for ( int i = 0 ; i < _listToggle.Count ; i++ )
+            {
+                if ( !_listToggle [i] )
+                {
+                    continue;
+                }
+                _listToggle [i].onValueChanged.RemoveAllListeners ();
+            }
         }
 
         #region 预制体组件查找
