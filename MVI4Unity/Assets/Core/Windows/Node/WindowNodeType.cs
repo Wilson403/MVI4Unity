@@ -133,6 +133,7 @@ namespace MVI4Unity
 
         public override void FillProps (AWindow window , AStateBase state , IStore store)
         {
+            window.RemoveAllListeners ();
             _fillProps?.Invoke (state as S , window as A , store);
         }
 

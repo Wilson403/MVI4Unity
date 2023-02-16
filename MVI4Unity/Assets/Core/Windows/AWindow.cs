@@ -36,9 +36,9 @@ namespace MVI4Unity
         /// <param name="data"></param>
         internal void SetGameObject (GameObject gameObject , object data = null)
         {
-            _listButton.AddRange (gameObject.GetComponents<Button> ());
-            _listScroll.AddRange (gameObject.GetComponents<ScrollRect> ());
-            _listToggle.AddRange (gameObject.GetComponents<Toggle> ());
+            _listButton.AddRange (gameObject.GetComponentsInChildren<Button> ());
+            _listScroll.AddRange (gameObject.GetComponentsInChildren<ScrollRect> ());
+            _listToggle.AddRange (gameObject.GetComponentsInChildren<Toggle> ());
 
             _gameObject = gameObject;
             _transform = gameObject.transform;

@@ -40,7 +40,6 @@ namespace MVI4Unity
                 } ,
                 fillProps: (state , window , store) =>
                 {
-                    window.btn.onClick.RemoveAllListeners ();
                     window.btn.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func01 , default); });
                 });
 
