@@ -75,7 +75,8 @@ namespace MVI4Unity
                 }
             }
 
-            for ( int i = 0 ; i < currNodes.Count ; i++ )
+            //穷举当前的节点列表，如果存在未能匹配的节点，将这个节点删除（回收）
+            for ( int i = 0 ; i < currNodes.Count ; )
             {
                 WindowNode currNode = currNodes [i];
                 if ( currNode.from == null )
@@ -140,6 +141,7 @@ namespace MVI4Unity
                 {
                     curNode.childNodeGroup.Add (PoolMgr.Ins.GetList<WindowNode> ().Pop ());
                 }
+
                 ResolveDispute4List (container , state , store , curNode.childNodeGroup [i] , newNode.childNodeGroup [i]);
             }
         }
