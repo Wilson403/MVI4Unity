@@ -47,6 +47,7 @@ namespace MVI4Unity
                 }
             }
             id2WindowNode.Push ();
+            id2WindowNode = null;
 
             //根据类型进行匹配
             for ( int i = 0 ; i < newNodes.Count ; i++ )
@@ -144,6 +145,7 @@ namespace MVI4Unity
 
                 ResolveDispute4List (container , state , store , curNode.childNodeGroup [i] , newNode.childNodeGroup [i]);
             }
+            newNodeContainerList.Push ();
         }
 
         /// <summary>
@@ -162,6 +164,7 @@ namespace MVI4Unity
                 }
             }
             currentNode.Destory ();
+            containerList.Push ();
         }
     }
 }

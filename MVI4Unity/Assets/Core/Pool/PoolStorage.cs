@@ -22,6 +22,10 @@ namespace MVI4Unity
             object item = _storage [_storage.Count - 1];
             _storage.RemoveAt (_storage.Count - 1);
             _poolType.onPop?.Invoke (( T ) item);
+            if ( item is IPoolItem poolItem )
+            {
+                poolItem.OnPop ();
+            }
             return item;
         }
 
@@ -46,6 +50,12 @@ namespace MVI4Unity
 
             _storage.Add (item);
             _poolType.onPush?.Invoke (( T ) item);
+
+            //执行回收单元自带的回调
+            if ( item is IPoolItem poolItem )
+            {
+                poolItem.OnPush ();
+            }
         }
     }
 }

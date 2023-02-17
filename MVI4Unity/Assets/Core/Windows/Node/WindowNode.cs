@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace MVI4Unity
 {
-    public class WindowNode : IEquatable<WindowNode>
+    public class WindowNode : IEquatable<WindowNode>, IPoolItem
     {
         /// <summary>
         /// 子节点组
         /// </summary>
-        public readonly List<List<WindowNode>> childNodeGroup;
+        public List<List<WindowNode>> childNodeGroup;
 
         /// <summary>
         /// 该节点对应类型
@@ -69,11 +69,7 @@ namespace MVI4Unity
         /// </summary>
         public void Destory ()
         {
-            //childNodes.Push ();
-            if ( _window != null )
-            {
-                PoolMgr.Ins.PushAWindow (_window);
-            }
+            PoolMgr.Ins.GetWindowNodePool ().Push (this);
         }
 
         /// <summary>
@@ -99,6 +95,30 @@ namespace MVI4Unity
             node._windowNodeType = _windowNodeType;
             node.id = id;
             node._window = _window;
+        }
+
+        public void OnPush ()
+        {
+            //回收对应的实体窗口
+            if ( _window != null )
+            {
+                PoolMgr.Ins.PushAWindow (_window);
+            }
+
+            //回收每一个List<WindowNode>
+            for ( int i = 0 ; i < childNodeGroup.Count ; i++ )
+            {
+                childNodeGroup [i].Push ();
+            }
+
+            //最后回收List<List<WindowNode>>
+            childNodeGroup.Push ();
+            childNodeGroup = null;
+        }
+
+        public void OnPop ()
+        {
+            childNodeGroup = childNodeGroup ?? PoolMgr.Ins.GetList<List<WindowNode>> ().Pop ();
         }
 
         public bool Equals (WindowNode other)
