@@ -24,7 +24,13 @@ namespace MVI4Unity
                     List<WindowNode> newNodeList = PoolMgr.Ins.GetList<WindowNode> ().Pop (); //从池里获取一个列表
                     newNodeList.Add (state.shouldDestroy ? default : component.GetRoot (state));
                     WindowNodeDisputeResolver.Ins.ResolveDispute4List (GameObject.transform , state , store , _currentNodes , newNodeList);
-                    newNodeList.Push (); //列表用完回收                 
+                    newNodeList.Push (); //列表用完回收           
+
+                    if ( state.shouldDestroy ) 
+                    {
+                        Destroy ();
+                    }
+
                 });
                 store.InitState ();
                 return;
