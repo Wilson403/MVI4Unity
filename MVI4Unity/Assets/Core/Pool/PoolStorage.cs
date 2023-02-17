@@ -19,9 +19,9 @@ namespace MVI4Unity
 
         public object Pop ()
         {
-            var item = _storage [_storage.Count - 1];
+            object item = _storage [_storage.Count - 1];
             _storage.RemoveAt (_storage.Count - 1);
-            _poolType.onPop?.Invoke ();
+            _poolType.onPop?.Invoke (( T ) item);
             return item;
         }
 
@@ -34,6 +34,13 @@ namespace MVI4Unity
 
             if ( _storage.Contains (item) )
             {
+                return;
+            }
+
+            //如果超出缓存的最大限制，不回收了
+            if ( item is IPoolEleCountLimit limit && limit.GetPoolEleMaxCount () >= 0 && _storage.Count >= limit.GetPoolEleMaxCount () )
+            {
+                limit.OnPushFail ();
                 return;
             }
 

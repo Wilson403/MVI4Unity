@@ -41,6 +41,7 @@ namespace MVI4Unity
                 fillProps: (state , window , store) =>
                 {
                     window.btn.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func01 , default); });
+                    window.btn2.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func02 , default); });
                 });
 
             UIWinMgr.Ins.CreateRootNodeContainer<State01 , Reducer01> (transform , new AWindowData ()

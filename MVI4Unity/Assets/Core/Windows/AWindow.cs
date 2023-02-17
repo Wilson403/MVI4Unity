@@ -10,7 +10,7 @@ namespace MVI4Unity
     /// <summary>
     /// 视图对象
     /// </summary>
-    public abstract class AWindow
+    public abstract class AWindow : IPoolEleCountLimit
     {
         private GameObject _gameObject;
         private Transform _transform;
@@ -84,6 +84,14 @@ namespace MVI4Unity
         }
 
         /// <summary>
+        /// 销毁
+        /// </summary>
+        public void Destroy ()
+        {
+            UnityEngine.Object.Destroy (_gameObject);
+        }
+
+        /// <summary>
         /// 获取视图名称
         /// </summary>
         /// <returns></returns>
@@ -123,6 +131,16 @@ namespace MVI4Unity
                 }
                 _listToggle [i].onValueChanged.RemoveAllListeners ();
             }
+        }
+
+        public virtual int GetPoolEleMaxCount ()
+        {
+            return -1;
+        }
+
+        public virtual void OnPushFail ()
+        {
+            Destroy ();
         }
 
         #region 预制体组件查找
@@ -339,7 +357,6 @@ namespace MVI4Unity
         {
 
         }
-
         #endregion
     }
 }

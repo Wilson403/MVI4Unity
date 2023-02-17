@@ -136,14 +136,12 @@ namespace MVI4Unity
         {
             if ( _poolTypeDict.TryGetValue (window.GetType () , out IPoolType poolType) )
             {
-                window.SetActive (false);
-                window.RemoveAllListeners ();
                 poolType.Push (window);
                 return;
             }
             Debug.LogWarning ($"无法回收{window}");
         }
-        
+
         /// <summary>
         /// 获取窗口对象池
         /// </summary>
@@ -160,8 +158,8 @@ namespace MVI4Unity
                     {
                         return UIWinMgr.Ins.Create<T> (windowPath , null);
                     } ,
-                    onPop: default ,
-                    onPush: OnAWindowPush);
+                    onPop: PoolRealContainer4AWindow.Ins.Pop ,
+                    onPush: PoolRealContainer4AWindow.Ins.Push);
             }
             return _poolTypeDict [windowType] as PoolType<T>;
         }
@@ -183,23 +181,18 @@ namespace MVI4Unity
             {
                 _poolTypeDict [windowType] = new PoolType<T> (
                     onCreate: onCreate ,
-                    onPop: onPop ,
+                    onPop: (t) =>
+                    {
+                        PoolRealContainer4AWindow.Ins.Pop (t);
+                        onPop?.Invoke ();
+                    } ,
                     onPush: (t) =>
                     {
-                        OnAWindowPush (t);
+                        PoolRealContainer4AWindow.Ins.Push (t);
                         onPush?.Invoke (t);
                     });
             }
             return _poolTypeDict [windowType] as PoolType<T>;
-        }
-
-        /// <summary>
-        /// 当窗口回收时
-        /// </summary>
-        /// <param name="window"></param>
-        void OnAWindowPush (AWindow window)
-        {
-
         }
 
         #endregion
@@ -218,7 +211,7 @@ namespace MVI4Unity
                 _poolTypeDict [type] = new PoolType<WindowNode> (
                     onCreate: () => { return new WindowNode (); } ,
                     onPop: default ,
-                    onPush: (node) => 
+                    onPush: (node) =>
                     {
                         node.childNodeGroup.Clear ();
                     });

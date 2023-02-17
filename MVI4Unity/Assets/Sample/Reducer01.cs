@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MVI4Unity
 {
@@ -31,15 +29,16 @@ namespace MVI4Unity
         private State01 Func01 (State01 oldState , object @param)
         {
             State01 state01 = new State01 ();
-            state01.count = oldState != default ? oldState.count - 1 : 10;
+            state01.count = oldState.count - 1;
             return state01;
         }
 
         [ReducerMethod (( int ) Reducer01MethodType.Func02)]
-        async private Task<State01> Func02 (State01 oldState , object @param)
+        private State01 Func02 (State01 oldState , object @param)
         {
-            await Task.Run (() => { Thread.Sleep (3000); });
-            return new State01 ();
+            State01 state01 = new State01 ();
+            state01.count = oldState.count + 1;
+            return state01;
         }
 
         [ReducerMethod (( int ) Reducer01MethodType.Func03)]

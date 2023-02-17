@@ -10,10 +10,10 @@ namespace MVI4Unity
     public class PoolType<T> : IPoolType
     {
         public readonly Func<T> onCreate;
-        public readonly Action onPop;
+        public readonly Action<T> onPop;
         public readonly Action<T> onPush;
 
-        public PoolType (Func<T> onCreate , Action onPop = null , Action<T> onPush = null)
+        public PoolType (Func<T> onCreate , Action<T> onPop = null , Action<T> onPush = null)
         {
             this.onCreate = onCreate;
             this.onPop = onPop;
