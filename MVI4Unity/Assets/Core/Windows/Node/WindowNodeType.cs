@@ -62,22 +62,6 @@ namespace MVI4Unity
     /// <typeparam name="S"></typeparam>
     public class WindowNodeType<A, S> : WindowNodeType where A : AWindow where S : AStateBase
     {
-        /// <summary>
-        /// 模块信息
-        /// </summary>
-        public struct ModuleVo
-        {
-            /// <summary>
-            /// 包含的ID列表
-            /// </summary>
-            public int [] modules;
-
-            /// <summary>
-            /// 参数填充委托
-            /// </summary>
-            public Action<A , S> fillProps;
-        }
-
         private readonly string _windowAssetPath;
         private readonly PoolType<A> _windowPool;
         private readonly Func<A , List<Transform>> _containerCreator;

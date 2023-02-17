@@ -1,12 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MVI4Unity
 {
     public class StartDemo : MonoBehaviour
     {
+        public Button btbn1;
+
         private void Awake ()
         {
+
+
             WindowNodeType<WindowItem , State01> item = new WindowNodeType<WindowItem , State01> ("WindownItem" ,
                 fillProps: (state , window , store) =>
                 {
@@ -42,12 +47,10 @@ namespace MVI4Unity
                 {
                     window.btn.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func01 , default); });
                     window.btn2.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func02 , default); });
+                    window.btnClose.onClick.AddListener (() => { store.DisPatch (ReducerCommonFunType.Close , default); });
                 });
 
-            UIWinMgr.Ins.CreateRootNodeContainer<State01 , Reducer01> (transform , new AWindowData ()
-            {
-                component = root ,
-            });
+            btbn1.onClick.AddListener (() => { UIWinMgr.Ins.Open<State01 , Reducer01> (transform , root); });
 
             #region Pool Test
 

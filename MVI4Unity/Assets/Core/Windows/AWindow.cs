@@ -341,22 +341,6 @@ namespace MVI4Unity
         {
 
         }
-
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        protected virtual void OnClose ()
-        {
-
-        }
-
-        /// <summary>
-        /// 获得焦点
-        /// </summary>
-        protected virtual void OnFocus ()
-        {
-
-        }
         #endregion
     }
 }

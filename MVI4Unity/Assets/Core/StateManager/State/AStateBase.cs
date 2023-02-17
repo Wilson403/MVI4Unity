@@ -13,8 +13,14 @@
         /// </summary>
         const int INVAILD_FUN_TAG = -999999999;
 
+        /// <summary>
+        /// 是否销毁
+        /// </summary>
+        public bool shouldDestroy;
+
         public AStateBase ()
         {
+            shouldDestroy = false;
             currentFunTag = INVAILD_FUN_TAG;
         }
     }

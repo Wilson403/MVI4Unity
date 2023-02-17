@@ -16,5 +16,8 @@ namespace MVI4Unity
 
         [AWindowCom ("btn2")]
         public Button btn2;
+
+        [AWindowCom ("btnClose")]
+        public Button btnClose;
     }
 }

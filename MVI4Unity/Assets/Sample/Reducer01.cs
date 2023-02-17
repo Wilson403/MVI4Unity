@@ -18,7 +18,7 @@ namespace MVI4Unity
         }
 
         [ReducerMethod (( int ) Reducer01MethodType.Init , true)]
-        private State01 InitState (State01 oldState , object @param)
+        State01 InitState (State01 oldState , object @param)
         {
             State01 state01 = new State01 ();
             state01.count = 10;
@@ -26,7 +26,7 @@ namespace MVI4Unity
         }
 
         [ReducerMethod (( int ) Reducer01MethodType.Func01)]
-        private State01 Func01 (State01 oldState , object @param)
+        State01 Func01 (State01 oldState , object @param)
         {
             State01 state01 = new State01 ();
             state01.count = oldState.count - 1;
@@ -34,7 +34,7 @@ namespace MVI4Unity
         }
 
         [ReducerMethod (( int ) Reducer01MethodType.Func02)]
-        private State01 Func02 (State01 oldState , object @param)
+        State01 Func02 (State01 oldState , object @param)
         {
             State01 state01 = new State01 ();
             state01.count = oldState.count + 1;
@@ -42,7 +42,7 @@ namespace MVI4Unity
         }
 
         [ReducerMethod (( int ) Reducer01MethodType.Func03)]
-        private void Func03 (State01 oldState , object @param , Action<State01> setNewState)
+        void Func03 (State01 oldState , object @param , Action<State01> setNewState)
         {
             setNewState.Invoke (new State01 ());
         }

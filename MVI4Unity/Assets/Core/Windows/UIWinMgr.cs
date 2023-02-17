@@ -58,9 +58,16 @@ namespace MVI4Unity
             return Create<T> (prefab , parent , data);
         }
 
-        public void CreateRootNodeContainer<S, R> (Transform parent , AWindowData data) where S : AStateBase where R : IReducer
+        /// <summary>
+        /// 打开某个界面
+        /// </summary>
+        /// <typeparam name="S"></typeparam>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="parent"></param>
+        /// <param name="component"></param>
+        public void Open<S, R> (Transform parent , WindowNodeType component) where S : AStateBase where R : IReducer
         {
-            Create<RootNodeContainer<S , R>> ("RootNodeContainer" , parent , data);
+            Create<RootNodeContainer<S , R>> ("RootNodeContainer" , parent , component);
         }
     }
 }

@@ -27,6 +27,14 @@ namespace MVI4Unity
     }
 
     /// <summary>
+    /// 内部通用函数
+    /// </summary>
+    public enum ReducerCommonFunType
+    {
+        Close = 999999999,
+    }
+
+    /// <summary>
     /// Reducer: 无状态设计，相当于一个函数容器，同类型的Reducer整个生命周期只需创建一次
     /// </summary>
     /// <typeparam name="S"></typeparam>
@@ -48,6 +56,7 @@ namespace MVI4Unity
         /// </summary>
         private void RegisterFunc ()
         {
+            //通过反射的形式添加派生类的函数
             MethodInfo [] methods = GetType ().GetMethods (BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
             for ( int i = 0 ; i < methods.Length ; i++ )
             {
@@ -73,6 +82,9 @@ namespace MVI4Unity
                         Debug.LogError ($"[{attr.methodTag}] Register fail");
                 }
             }
+
+            //添加内部的函数
+            AddMethod (ReducerCommonFunType.Close , Close);
         }
 
         private string GetEnumName (Enum tag)
@@ -179,5 +191,17 @@ namespace MVI4Unity
             }
             return ReducerExecuteType.None;
         }
+
+        #region 通用状态变更函数的注册
+
+        [ReducerMethod (( int ) ReducerCommonFunType.Close)]
+#pragma warning disable IDE0051
+        S Close (S oldState , object @param)
+        {
+            oldState.shouldDestroy = true;
+            return oldState;
+        }
+
+        #endregion
     }
 }

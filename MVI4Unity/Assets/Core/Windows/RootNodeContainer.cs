@@ -17,14 +17,14 @@ namespace MVI4Unity
         {
             base.OnInit ();
             Store<S> store = SimpleStoreFactory.Ins.CreateStore<S , R> ();
-            if ( data is AWindowData windowData )
+            if ( data is WindowNodeType component )
             {
                 store.Subscribe ((state) =>
                 {
                     List<WindowNode> newNodeList = PoolMgr.Ins.GetList<WindowNode> ().Pop (); //从池里获取一个列表
-                    newNodeList.Add (windowData.component.GetRoot (state));
+                    newNodeList.Add (state.shouldDestroy ? default : component.GetRoot (state));
                     WindowNodeDisputeResolver.Ins.ResolveDispute4List (GameObject.transform , state , store , _currentNodes , newNodeList);
-                    newNodeList.Push (); //列表用完回收                    
+                    newNodeList.Push (); //列表用完回收                 
                 });
                 store.InitState ();
                 return;

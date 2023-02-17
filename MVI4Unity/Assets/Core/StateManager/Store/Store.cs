@@ -169,6 +169,16 @@ namespace MVI4Unity
             }
         }
 
+        /// <summary>
+        /// 销毁
+        /// </summary>
+        public void Destroy ()
+        {
+            var state = _currentState ?? Activator.CreateInstance<S> ();
+            state.shouldDestroy = true;
+            SetNewState (default , state);
+        }
+
         #endregion
     }
 }
