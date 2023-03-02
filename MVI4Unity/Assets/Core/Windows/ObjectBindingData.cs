@@ -25,7 +25,7 @@ namespace MVI4Unity
         /// <returns></returns>
         public UnityEngine.Object [] Find (string key)
         {
-            foreach ( var vo in resList )
+            foreach ( BindingVO vo in resList )
             {
                 if ( vo.key == key )
                 {
@@ -38,7 +38,7 @@ namespace MVI4Unity
 
         public static UnityEngine.Object [] Find (GameObject go , string key)
         {
-            var data = go.GetComponent<ObjectBindingData> ();
+            ObjectBindingData data = go.GetComponent<ObjectBindingData> ();
             if ( null == data )
             {
                 return null;

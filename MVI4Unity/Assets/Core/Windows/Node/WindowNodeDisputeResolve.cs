@@ -113,7 +113,7 @@ namespace MVI4Unity
         }
 
         void Compare (WindowNode curNode , WindowNode newNode , AStateBase state , IStore store)
-        {
+        { 
             newNode.FillProps (curNode.Window , state , store);
             ResolveChildNodeDispute (curNode , newNode , state , curNode.Window , store);
         }

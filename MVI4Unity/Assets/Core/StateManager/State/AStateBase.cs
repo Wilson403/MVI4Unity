@@ -1,4 +1,6 @@
-﻿namespace MVI4Unity
+﻿using Newtonsoft.Json;
+
+namespace MVI4Unity
 {
     public abstract class AStateBase
     {
@@ -22,6 +24,11 @@
         {
             shouldDestroy = false;
             currentFunTag = INVAILD_FUN_TAG;
+        }
+
+        public T Clone<T> () where T : AStateBase
+        {
+            return JsonConvert.DeserializeObject<T> (JsonConvert.SerializeObject (this));
         }
     }
 }

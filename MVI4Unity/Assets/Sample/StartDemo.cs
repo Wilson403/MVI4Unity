@@ -13,9 +13,9 @@ namespace MVI4Unity
 
 
             WindowNodeType<WindowItem , State01> item = new WindowNodeType<WindowItem , State01> ("WindownItem" ,
-                fillProps: (state , window , store) =>
+                fillProps: (state , window , store , prop) =>
                 {
-
+                    Debug.LogWarning ($"{state} = {window} = {store}");
                 });
 
             WindowNodeType<Window01 , State01> root = new WindowNodeType<Window01 , State01> ("Windown01" ,
@@ -43,7 +43,7 @@ namespace MVI4Unity
 
                     return childNodeGroup;
                 } ,
-                fillProps: (state , window , store) =>
+                fillProps: (state , window , store , prop) =>
                 {
                     window.btn.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func01 , default); });
                     window.btn2.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func02 , default); });

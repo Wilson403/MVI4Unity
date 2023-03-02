@@ -103,6 +103,7 @@ namespace MVI4Unity
             for ( int i = 0 ; i < _callbackList.Count ; i++ )
             {
                 Action<S> callback = _callbackList [i];
+                _currentState ??= Activator.CreateInstance<S> ();
                 _currentState.currentFunTag = tag != default ? tag.GetHashCode () : _currentState.currentFunTag;
                 callback?.Invoke (_currentState);
             }

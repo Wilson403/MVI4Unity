@@ -20,7 +20,6 @@ namespace MVI4Unity
         {
             GameObject go = UnityEngine.Object.Instantiate (prefab , parent);
             go.name = prefab.name;
-
             AWindow view = Activator.CreateInstance (type) as AWindow;
             view.SetGameObject (go , data);
             return view;
@@ -55,7 +54,9 @@ namespace MVI4Unity
             {
                 Debug.LogError ($"assetPath[{assetPath}] 对应资源为空");
             }
-            return Create<T> (prefab , parent , data);
+            T window = Create<T> (prefab , parent , data);
+            window.assetPath = assetPath;
+            return window;
         }
 
         /// <summary>
@@ -65,9 +66,24 @@ namespace MVI4Unity
         /// <typeparam name="R"></typeparam>
         /// <param name="parent"></param>
         /// <param name="component"></param>
-        public void Open<S, R> (Transform parent , WindowNodeType component) where S : AStateBase where R : IReducer
+        /// <returns></returns>
+        public RootNodeContainer<S , R> Open<S, R> (Transform parent , WindowNodeType component) where S : AStateBase where R : IReducer
         {
-            Create<RootNodeContainer<S , R>> ("RootNodeContainer" , parent , component);
+            return Create<RootNodeContainer<S , R>> ("RootNodeContainer" , parent , new RootNodeContainerData () { component = component });
+        }
+
+        /// <summary>
+        /// 打开某个界面
+        /// </summary>
+        /// <typeparam name="S"></typeparam>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="parent"></param>
+        /// <param name="component"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public RootNodeContainer<S , R> Open<S, R> (Transform parent , WindowNodeType component , object @param) where S : AStateBase where R : IReducer
+        {
+            return Create<RootNodeContainer<S , R>> ("RootNodeContainer" , parent , new RootNodeContainerData () { component = component , data = param });
         }
     }
 }

@@ -35,10 +35,11 @@ namespace Zero
                     go.AddComponent<T> ();
                     _ins = go.GetComponent<T> ();
                 }
-                if ( _ins.transform.parent == null )
-                {
-                    DontDestroyOnLoad (_ins.gameObject);
-                }
+            }
+
+            if ( _ins.transform.parent == null )
+            {
+                DontDestroyOnLoad (_ins.gameObject);
             }
         }
 

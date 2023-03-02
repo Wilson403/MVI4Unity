@@ -14,7 +14,7 @@ namespace MVI4Unity
         /// <summary>
         /// 该节点对应类型
         /// </summary>
-        private WindowNodeType _windowNodeType;
+        protected WindowNodeType windowNodeType;
 
         /// <summary>
         /// 该节点来源
@@ -61,7 +61,7 @@ namespace MVI4Unity
         /// <param name="windowNodeType"></param>
         public void SetWindowNodeType (WindowNodeType windowNodeType)
         {
-            _windowNodeType = windowNodeType;
+            this.windowNodeType = windowNodeType;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace MVI4Unity
         /// <param name="node"></param>
         public void CloneNodeProp (WindowNode node)
         {
-            node._windowNodeType = _windowNodeType;
+            node.windowNodeType = windowNodeType;
             node.id = id;
             node._window = _window;
         }
@@ -124,39 +124,53 @@ namespace MVI4Unity
         public bool Equals (WindowNode other)
         {
             //判断依据：节点类型对应的窗口池相同，即都是同一个预制体
-            return _windowNodeType.GetResTag ().Equals (other._windowNodeType.GetResTag ());
+            return windowNodeType.GetResTag ().Equals (other.windowNodeType.GetResTag ());
         }
 
         public override string ToString ()
         {
-            //StringBuilder sb = new StringBuilder ();
-            //JsonWriter jr = new JsonWriter (sb)
-            //{
-            //    PrettyPrint = true ,
-            //    IndentValue = 4
-            //};
-            //JsonMapper.ToJson (this , jr);
-            return $"Type:{_windowNodeType.GetType ()}\nresName:{_windowNodeType.GetResTag ()}";
+            return $"Type:{windowNodeType.GetType ()}\nresName:{windowNodeType.GetResTag ()}";
         }
 
         #region 封装来自WindowNodeType的函数，而不是直接调用
 
         public AWindow CreateAWindow (Transform container)
         {
-            _window = _windowNodeType.CreateAWindow (container);
+            _window = windowNodeType.CreateAWindow (container);
             return _window;
         }
 
-        public void FillProps (AWindow window , AStateBase state , IStore store)
+        public virtual void FillProps (AWindow window , AStateBase state , IStore store)
         {
-            _windowNodeType.FillProps (window , state , store);
+            windowNodeType.FillProps (window , state , store);
         }
 
         public List<Transform> GetContainerList (AWindow window)
         {
-            return _windowNodeType.GetContainerList (window);
+            return windowNodeType.GetContainerList (window);
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// 带有属性的节点
+    /// </summary>
+    /// <typeparam name="A"></typeparam>
+    /// <typeparam name="S"></typeparam>
+    /// <typeparam name="P"></typeparam>
+    public class WindowNode<A, S, P> : WindowNode where A : AWindow where S : AStateBase
+    {
+        public P prop;
+
+        public override void FillProps (AWindow window , AStateBase state , IStore store)
+        {
+            if ( windowNodeType is WindowNodeType<A , S , P> realWindowNodeType )
+            {
+                realWindowNodeType.FillProps (window , state , store , prop);
+                return;
+            }
+            base.FillProps (window , state , store);
+        }
     }
 }

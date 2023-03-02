@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
+using Transform = UnityEngine.Transform;
 
 namespace MVI4Unity
 {
@@ -15,6 +16,7 @@ namespace MVI4Unity
         private GameObject _gameObject;
         private Transform _transform;
         private RectTransform _rectTransform;
+        public string assetPath = "";
         protected object data;
 
         private readonly List<Button> _listButton = new List<Button> ();
@@ -34,6 +36,7 @@ namespace MVI4Unity
         /// </summary>
         /// <param name="gameObject"></param>
         /// <param name="data"></param>
+        /// <param name="assetPath"></param>
         internal void SetGameObject (GameObject gameObject , object data = null)
         {
             _listButton.AddRange (gameObject.GetComponentsInChildren<Button> ());
@@ -70,8 +73,16 @@ namespace MVI4Unity
         public void SetParent (Transform parent)
         {
             _transform.SetParent (parent);
+        }
+
+        /// <summary>
+        /// 设置默认Transform参数
+        /// </summary>
+        public void SetDefaultTransProp () 
+        {
             _transform.localScale = Vector3.one;
             _transform.localPosition = Vector3.zero;
+            _rectTransform.sizeDelta = Vector2.zero;
         }
 
         /// <summary>
@@ -89,6 +100,7 @@ namespace MVI4Unity
         public void Destroy ()
         {
             UnityEngine.Object.Destroy (_gameObject);
+            Disable ();
         }
 
         /// <summary>

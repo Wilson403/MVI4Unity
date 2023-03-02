@@ -67,19 +67,29 @@ namespace MVI4Unity
                     Enum tag = Enum.ToObject (typeof (E) , attr.methodTag) as Enum;
 
                     if ( attr.firstAutoExecute )
+                    {
                         GetFirstAutoExecuteList ().Add (tag);
+                    }
 
                     if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.Reducer reducer) )
+                    {
                         AddMethod (tag , reducer);
+                    }
 
                     else if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.AsyncReducer asyncReducer) )
+                    {
                         AddAsyncMethod (tag , asyncReducer);
+                    }
 
                     else if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.CallbackReducer callback) )
+                    {
                         AddCallBack (tag , callback);
+                    }
 
                     else
+                    {
                         Debug.LogError ($"[{attr.methodTag}] Register fail");
+                    }
                 }
             }
 

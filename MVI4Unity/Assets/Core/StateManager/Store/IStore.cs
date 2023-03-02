@@ -9,6 +9,6 @@ namespace MVI4Unity
         /// </summary>
         /// <param name="tag"></param>
         /// <param name="param"></param>
-        void DisPatch (Enum tag , object @param);
+        void DisPatch (Enum tag , object @param = null);
     }
 }

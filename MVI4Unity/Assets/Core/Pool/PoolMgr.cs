@@ -6,7 +6,8 @@ namespace MVI4Unity
 {
     public class PoolMgr : SafeSingleton<PoolMgr>
     {
-        private readonly Dictionary<Type , IPoolType> _poolTypeDict = new Dictionary<Type , IPoolType> ();
+        private readonly Dictionary<Type , IPoolType> _type2PoolType = new Dictionary<Type , IPoolType> ();
+        private readonly Dictionary<string , IPoolType> _str2PoolType = new Dictionary<string , IPoolType> ();
         private readonly Dictionary<IPoolType , IPoolStorage> _storageDict = new Dictionary<IPoolType , IPoolStorage> ();
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace MVI4Unity
         /// <returns></returns>
         public bool TryGetPoolType<T> (out IPoolType pooltype)
         {
-            return _poolTypeDict.TryGetValue (typeof (T) , out pooltype);
+            return _type2PoolType.TryGetValue (typeof (T) , out pooltype);
         }
 
         /// <summary>
@@ -74,9 +75,9 @@ namespace MVI4Unity
         /// <returns></returns>
         public PoolType<List<T>> GetList<T> ()
         {
-            if ( !_poolTypeDict.ContainsKey (typeof (List<T>)) )
+            if ( !_type2PoolType.ContainsKey (typeof (List<T>)) )
             {
-                _poolTypeDict [typeof (List<T>)] = new PoolType<List<T>> (
+                _type2PoolType [typeof (List<T>)] = new PoolType<List<T>> (
                     onCreate: () =>
                     {
                         return new List<T> (0);
@@ -86,7 +87,7 @@ namespace MVI4Unity
                         t.Clear ();
                     });
             }
-            return _poolTypeDict [typeof (List<T>)] as PoolType<List<T>>;
+            return _type2PoolType [typeof (List<T>)] as PoolType<List<T>>;
         }
 
         /// <summary>
@@ -97,9 +98,9 @@ namespace MVI4Unity
         /// <returns></returns>
         public PoolType<Dictionary<T1 , T2>> GetDict<T1, T2> ()
         {
-            if ( !_poolTypeDict.ContainsKey (typeof (Dictionary<T1 , T2>)) )
+            if ( !_type2PoolType.ContainsKey (typeof (Dictionary<T1 , T2>)) )
             {
-                _poolTypeDict [typeof (Dictionary<T1 , T2>)] = new PoolType<Dictionary<T1 , T2>> (
+                _type2PoolType [typeof (Dictionary<T1 , T2>)] = new PoolType<Dictionary<T1 , T2>> (
                     onCreate: () =>
                     {
                         return new Dictionary<T1 , T2> ();
@@ -109,7 +110,7 @@ namespace MVI4Unity
                         t.Clear ();
                     });
             }
-            return _poolTypeDict [typeof (Dictionary<T1 , T2>)] as PoolType<Dictionary<T1 , T2>>;
+            return _type2PoolType [typeof (Dictionary<T1 , T2>)] as PoolType<Dictionary<T1 , T2>>;
         }
 
         #endregion
@@ -134,7 +135,7 @@ namespace MVI4Unity
         /// <param name="window"></param>
         public void PushAWindow<T> (T window) where T : AWindow
         {
-            if ( _poolTypeDict.TryGetValue (window.GetType () , out IPoolType poolType) )
+            if ( !string.IsNullOrEmpty (window.assetPath) && _str2PoolType.TryGetValue (window.assetPath , out IPoolType poolType) )
             {
                 poolType.Push (window);
                 return;
@@ -151,9 +152,9 @@ namespace MVI4Unity
         public PoolType<T> GetAWindowPool<T> (string windowPath) where T : AWindow
         {
             Type windowType = typeof (T);
-            if ( !_poolTypeDict.ContainsKey (windowType) )
+            if ( !_str2PoolType.ContainsKey (windowPath) || _str2PoolType [windowPath].GetTag () != windowPath )
             {
-                _poolTypeDict [windowType] = new PoolType<T> (
+                _str2PoolType [windowPath] = new PoolType<T> (
                     onCreate: () =>
                     {
                         return UIWinMgr.Ins.Create<T> (windowPath , null);
@@ -161,7 +162,7 @@ namespace MVI4Unity
                     onPop: PoolRealContainer4AWindow.Ins.Pop ,
                     onPush: PoolRealContainer4AWindow.Ins.Push);
             }
-            return _poolTypeDict [windowType] as PoolType<T>;
+            return _str2PoolType [windowPath] as PoolType<T>;
         }
 
         /// <summary>
@@ -177,9 +178,9 @@ namespace MVI4Unity
         {
             Type windowType = typeof (T);
             onCreate = onCreate ?? ( () => { return UIWinMgr.Ins.Create<T> (windowPath , null); } );
-            if ( !_poolTypeDict.ContainsKey (windowType) )
+            if ( !_str2PoolType.ContainsKey (windowPath) )
             {
-                _poolTypeDict [windowType] = new PoolType<T> (
+                _str2PoolType [windowPath] = new PoolType<T> (
                     onCreate: onCreate ,
                     onPop: (t) =>
                     {
@@ -192,7 +193,7 @@ namespace MVI4Unity
                         onPush?.Invoke (t);
                     });
             }
-            return _poolTypeDict [windowType] as PoolType<T>;
+            return _str2PoolType [windowPath] as PoolType<T>;
         }
 
         #endregion
@@ -206,9 +207,9 @@ namespace MVI4Unity
         public PoolType<WindowNode> GetWindowNodePool ()
         {
             Type type = typeof (WindowNode);
-            if ( !_poolTypeDict.ContainsKey (typeof (WindowNode)) )
+            if ( !_type2PoolType.ContainsKey (typeof (WindowNode)) )
             {
-                _poolTypeDict [type] = new PoolType<WindowNode> (
+                _type2PoolType [type] = new PoolType<WindowNode> (
                     onCreate: () => { return new WindowNode (); } ,
                     onPop: default ,
                     onPush: (node) =>
@@ -216,7 +217,30 @@ namespace MVI4Unity
                         node.childNodeGroup.Clear ();
                     });
             }
-            return _poolTypeDict [type] as PoolType<WindowNode>;
+            return _type2PoolType [type] as PoolType<WindowNode>;
+        }
+
+        /// <summary>
+        /// 获取窗口节点对象池
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <typeparam name="S"></typeparam>
+        /// <typeparam name="P"></typeparam>
+        /// <returns></returns>
+        public PoolType<WindowNode<A , S , P>> GetWindowNodePool<A, S, P> () where A : AWindow where S : AStateBase
+        {
+            Type type = typeof (WindowNode<A , S , P>);
+            if ( !_type2PoolType.ContainsKey (typeof (WindowNode<A , S , P>)) )
+            {
+                _type2PoolType [type] = new PoolType<WindowNode<A , S , P>> (
+                    onCreate: () => { return new WindowNode<A , S , P> (); } ,
+                    onPop: default ,
+                    onPush: (node) =>
+                    {
+                        node.childNodeGroup.Clear ();
+                    });
+            }
+            return _type2PoolType [type] as PoolType<WindowNode<A , S , P>>;
         }
 
         #endregion
