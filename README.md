@@ -6,4 +6,8 @@ MVI是纯响应式、函数式编程的架构，更加强调数据的单向流�
 
 ## 如何管理数据
 ![image](https://user-images.githubusercontent.com/38308449/222396422-2055b233-e8a1-4e2a-8834-3e436f1ed7e7.png)
+* State: 业务逻辑的状态，表现层就是获取最新的State来刷新界面的
+* Reducer: 业务逻辑集合，就是一堆函数，采用函数式设计，不维护状态，只负责接收和返回新状态
+* Store: 相当于Reducer与表现层交互的中间件，存储维护Reducer派发下来的State并通知表现层
 ## 如何管理界面（表现层）
+![Uploading image.png…]()
