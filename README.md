@@ -35,7 +35,8 @@ MVI是纯响应式、函数式编程的架构，更加强调数据的单向流�
 
 ## 框架教程
 后续待补充，Sample只是一个简单案例，结合框架源码很快就能掌握 
-给我个Star,让我有动力补文档~
+
+<b>给我个Star,让我有动力补文档~</b>
 
 ## 推荐项目
   - [JEngine](https://github.com/JasonXuDeveloper/JEngine) - The solution that allows unity games update in runtime. 使Unity开发的游戏支持热更新的解决方案。
