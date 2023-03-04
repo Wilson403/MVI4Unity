@@ -40,5 +40,5 @@ MVI是纯响应式、函数式编程的架构，更加强调数据的单向流�
 
 ## 推荐项目
   - [JEngine](https://github.com/JasonXuDeveloper/JEngine) - The solution that allows unity games update in runtime. 使Unity开发的游戏支持热更新的解决方案。
-  - [BDFramework](https://github.com/yimengfan/BDFramework.Core) - Simple and powerful Unity3d game workflow! 简单、高效、高度工业化的商业级unity3d 工作流。
+  - [BDFramework](https://github.com/yimengfan/BDFramework.Core) - Simple and powerful Unity3d game workflow! 简单、高效、高度工业化的商业级unity3d 工作流。本项目借鉴了其状态管理部分
   - [Html2UnityRich](https://github.com/Wilson403/Html2UnityRich) - 能够将Html标签转化为Unity支持的富文本标签的库（UGUI or TextPro）
