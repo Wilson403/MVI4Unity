@@ -152,7 +152,7 @@ namespace MVI4Unity
         public PoolType<T> GetAWindowPool<T> (string windowPath) where T : AWindow
         {
             Type windowType = typeof (T);
-            if ( !_str2PoolType.ContainsKey (windowPath) || _str2PoolType [windowPath].GetTag () != windowPath )
+            if ( !_str2PoolType.ContainsKey (windowPath) )
             {
                 _str2PoolType [windowPath] = new PoolType<T> (
                     onCreate: () =>
