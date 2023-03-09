@@ -41,9 +41,9 @@ namespace MVI4Unity
         object Execute (Enum tag , object lastState , object @param);
 
         /// <summary>
-        /// 获取自动执行列表
+        /// 获取自动执行字典
         /// </summary>
         /// <returns></returns>
-        List<Enum> GetFirstAutoExecuteList ();
+        Dictionary<Enum , ReducerExecuteType> GetFirstAutoExecuteDict ();
     }
 }

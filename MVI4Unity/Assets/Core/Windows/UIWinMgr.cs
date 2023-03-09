@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MVI4Unity
@@ -8,6 +9,8 @@ namespace MVI4Unity
     /// </summary>
     public class UIWinMgr : SafeSingleton<UIWinMgr>
     {
+        private readonly List<IRootNodeContainer> _rootViewCacheList = new List<IRootNodeContainer> ();
+
         /// <summary>
         /// 创建视图
         /// </summary>
@@ -69,7 +72,7 @@ namespace MVI4Unity
         /// <returns></returns>
         public RootNodeContainer<S , R> Open<S, R> (Transform parent , WindowNodeType component) where S : AStateBase where R : IReducer
         {
-            return Create<RootNodeContainer<S , R>> ("RootNodeContainer" , parent , new RootNodeContainerData () { component = component });
+            return PushCacheList (Create<RootNodeContainer<S , R>> ("RootNodeContainer" , parent , new RootNodeContainerData () { component = component })) as RootNodeContainer<S , R>;
         }
 
         /// <summary>
@@ -83,7 +86,36 @@ namespace MVI4Unity
         /// <returns></returns>
         public RootNodeContainer<S , R> Open<S, R> (Transform parent , WindowNodeType component , object @param) where S : AStateBase where R : IReducer
         {
-            return Create<RootNodeContainer<S , R>> ("RootNodeContainer" , parent , new RootNodeContainerData () { component = component , data = param });
+            return PushCacheList (Create<RootNodeContainer<S , R>> ("RootNodeContainer" , parent , new RootNodeContainerData () { component = component , data = param })) as RootNodeContainer<S , R>;
+        }
+
+        /// <summary>
+        /// 关闭全部界面
+        /// </summary>
+        public void CloseAllView ()
+        {
+            for ( int i = 0 ; i < _rootViewCacheList.Count ; i++ )
+            {
+                _rootViewCacheList [i].DisPatch (ReducerCommonFunType.Close);
+            }
+            _rootViewCacheList.Clear ();
+        }
+
+        IRootNodeContainer PushCacheList (IRootNodeContainer rootNodeContainer)
+        {
+            for ( int i = 0 ; i < _rootViewCacheList.Count ; )
+            {
+                if ( !_rootViewCacheList [i].IsUseful () )
+                {
+                    _rootViewCacheList.RemoveAt (i);
+                }
+                else
+                {
+                    i++;
+                }
+            }
+            _rootViewCacheList.Add (rootNodeContainer);
+            return rootNodeContainer;
         }
     }
 }

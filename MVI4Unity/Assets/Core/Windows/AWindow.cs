@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
 using Transform = UnityEngine.Transform;
+using Unity.VisualScripting;
 
 namespace MVI4Unity
 {
@@ -36,19 +37,48 @@ namespace MVI4Unity
         /// </summary>
         /// <param name="gameObject"></param>
         /// <param name="data"></param>
-        /// <param name="assetPath"></param>
         internal void SetGameObject (GameObject gameObject , object data = null)
         {
-            _listButton.AddRange (gameObject.GetComponentsInChildren<Button> ());
-            _listScroll.AddRange (gameObject.GetComponentsInChildren<ScrollRect> ());
-            _listToggle.AddRange (gameObject.GetComponentsInChildren<Toggle> ());
-
             _gameObject = gameObject;
             _transform = gameObject.transform;
             _rectTransform = gameObject.GetComponent<RectTransform> ();
+            FindAllComponent (_transform);
             this.data = data;
             FillComponent ();
             OnInit ();
+        }
+
+        /// <summary>
+        /// 找到全部组件
+        /// </summary>
+        /// <param name="parent"></param>
+        void FindAllComponent (Transform parent)
+        {
+            AddComponent (parent);
+            foreach ( Transform child in parent )
+            {
+                FindAllComponent (child);
+            }
+        }
+
+        /// <summary>
+        /// 添加组件
+        /// </summary>
+        /// <param name="node"></param>
+        void AddComponent (Transform node)
+        {
+            if ( node.TryGetComponent<Button> (out var btn) )
+            {
+                _listButton.Add (btn);
+            }
+            else if ( node.TryGetComponent<ScrollRect> (out var scrollRect) )
+            {
+                _listScroll.Add (scrollRect);
+            }
+            else if ( node.TryGetComponent<Toggle> (out var toggle) )
+            {
+                _listToggle.Add (toggle);
+            }
         }
 
         /// <summary>

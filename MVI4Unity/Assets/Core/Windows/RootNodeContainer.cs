@@ -10,10 +10,26 @@ namespace MVI4Unity
         public object data;
     }
 
+    public interface IRootNodeContainer
+    {
+        /// <summary>
+        /// 派发
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="param"></param>
+        void DisPatch (Enum tag , object @param = null);
+
+        /// <summary>
+        /// 是否有效
+        /// </summary>
+        /// <returns></returns>
+        bool IsUseful ();
+    }
+
     /// <summary>
     /// 根节点的容器
     /// </summary>
-    public class RootNodeContainer<S, R> : AWindow where S : AStateBase where R : IReducer
+    public class RootNodeContainer<S, R> : AWindow, IRootNodeContainer where S : AStateBase where R : IReducer
     {
         /// <summary>
         /// 当前节点列表
@@ -86,14 +102,14 @@ namespace MVI4Unity
             }
         }
 
-        /// <summary>
-        /// 派发
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="param"></param>
         public void DisPatch (Enum tag , object @param = null)
         {
             _store?.DisPatch (tag , param);
+        }
+
+        public bool IsUseful ()
+        {
+            return !IsDestroyed ();
         }
     }
 }

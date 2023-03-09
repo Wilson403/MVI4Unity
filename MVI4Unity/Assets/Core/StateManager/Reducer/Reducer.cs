@@ -44,7 +44,7 @@ namespace MVI4Unity
         private readonly Dictionary<string , Store<S>.Reducer> _tag2Method = new Dictionary<string , Store<S>.Reducer> ();
         private readonly Dictionary<string , Store<S>.AsyncReducer> _tag2AsyncMethod = new Dictionary<string , Store<S>.AsyncReducer> ();
         private readonly Dictionary<string , Store<S>.CallbackReducer> _tag2Callback = new Dictionary<string , Store<S>.CallbackReducer> ();
-        private readonly List<Enum> _firstAutoExecuteList = new List<Enum> ();
+        private readonly Dictionary<Enum , ReducerExecuteType> _firstAutoExecuteDict = new Dictionary<Enum , ReducerExecuteType> ();
 
         public Reducer ()
         {
@@ -65,30 +65,34 @@ namespace MVI4Unity
                 if ( attr != null )
                 {
                     Enum tag = Enum.ToObject (typeof (E) , attr.methodTag) as Enum;
-
-                    if ( attr.firstAutoExecute )
-                    {
-                        GetFirstAutoExecuteList ().Add (tag);
-                    }
+                    ReducerExecuteType reducerExecuteType = ReducerExecuteType.None;
 
                     if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.Reducer reducer) )
                     {
                         AddMethod (tag , reducer);
+                        reducerExecuteType = ReducerExecuteType.Synchronize;
                     }
 
                     else if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.AsyncReducer asyncReducer) )
                     {
                         AddAsyncMethod (tag , asyncReducer);
+                        reducerExecuteType = ReducerExecuteType.Async;
                     }
 
                     else if ( UtilGeneral.Ins.Method2Delegate (method , this , out Store<S>.CallbackReducer callback) )
                     {
                         AddCallBack (tag , callback);
+                        reducerExecuteType = ReducerExecuteType.CallBack;
                     }
 
                     else
                     {
                         Debug.LogError ($"[{attr.methodTag}] Register fail");
+                    }
+
+                    if ( attr.firstAutoExecute )
+                    {
+                        GetFirstAutoExecuteDict ().Add (tag , reducerExecuteType);
                     }
                 }
             }
@@ -179,9 +183,9 @@ namespace MVI4Unity
             return null;
         }
 
-        public List<Enum> GetFirstAutoExecuteList ()
+        public Dictionary<Enum , ReducerExecuteType> GetFirstAutoExecuteDict ()
         {
-            return _firstAutoExecuteList;
+            return _firstAutoExecuteDict;
         }
 
         public ReducerExecuteType GetReducerExecuteType (Enum tag)

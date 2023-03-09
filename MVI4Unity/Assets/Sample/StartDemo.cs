@@ -10,8 +10,6 @@ namespace MVI4Unity
 
         private void Awake ()
         {
-
-
             WindowNodeType<WindowItem , State01> item = new WindowNodeType<WindowItem , State01> ("WindownItem" ,
                 fillProps: (state , window , store , prop) =>
                 {

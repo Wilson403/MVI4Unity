@@ -156,17 +156,22 @@ namespace MVI4Unity
             }
             _isInitState = true;
 
-            //如果一个初始函数都没有，那么手动创建一个状态实例
-            if ( _reducer.GetFirstAutoExecuteList ().Count == 0 )
+            bool isForceInitState = true;
+            //执行初始函数来初始化状态实例
+            foreach ( var item in _reducer.GetFirstAutoExecuteDict () )
+            {
+                DisPatch (item.Key , default);
+                if ( item.Value == ReducerExecuteType.Synchronize )
+                {
+                    isForceInitState = false;
+                }
+            }
+
+            //如果一个初始函数为能及时提供状态刷新，则需要强制刷新一次状态
+            if ( isForceInitState )
             {
                 SetNewState (default , Activator.CreateInstance<S> ());
                 return;
-            }
-
-            //执行初始函数来初始化状态实例
-            for ( int i = 0 ; i < _reducer.GetFirstAutoExecuteList ().Count ; i++ )
-            {
-                DisPatch (_reducer.GetFirstAutoExecuteList () [i] , default);
             }
         }
 

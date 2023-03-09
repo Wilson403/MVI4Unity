@@ -42,6 +42,12 @@ namespace MVI4Unity
             return false;
         }
 
+        /// <summary>
+        ///  获取类的基类
+        /// /summary>
+        /// <param name="type"></param>
+        /// <param name="includeSelf"></param>
+        /// <returns></returns>
         public IEnumerable<Type> GetBaseClasses (Type type , bool includeSelf = false)
         {
             if ( type is object && type.BaseType is object )
