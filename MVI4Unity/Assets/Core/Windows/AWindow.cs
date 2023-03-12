@@ -5,7 +5,6 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
 using Transform = UnityEngine.Transform;
-using Unity.VisualScripting;
 
 namespace MVI4Unity
 {
