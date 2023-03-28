@@ -151,7 +151,6 @@ namespace MVI4Unity.Sample
                 {
                     //由Func01引起的变化
                 }
-                window.btn.GetComponent<RectTransform>()
                 window.btn.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func01 , default); });
                 window.btn2.onClick.AddListener (() => { store.DisPatch (Reducer01.Reducer01MethodType.Func02 , default); });
                 window.btnClose.onClick.AddListener (() => { store.DisPatch (ReducerCommonFunType.Close , default); });
