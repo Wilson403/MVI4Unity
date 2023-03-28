@@ -7,7 +7,6 @@ namespace MVI4Unity.Sample
         private void Awake ()
         {
             OpenViewMgr.Ins.ShowTip ("欢迎进入演示场景");
-            OpenViewMgr.Ins.OpenWindow01 ();
         }
     }
 }

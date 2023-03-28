@@ -5,14 +5,6 @@ using UnityEngine;
 
 namespace MVI4Unity
 {
-    /// <summary>
-    /// @创建者: 江选辉
-    /// @创建日期: 2020/5/13 9:20:47
-    /// @功能描述: 用于对节点进行相关操作
-    /// @修改者：
-    /// @修改日期：
-    /// @修改描述：
-    /// </summary>
     public class UtilGameObject : SafeSingleton<UtilGameObject>
     {
         public void LogChildren (Transform node)
