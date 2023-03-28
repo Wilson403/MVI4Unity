@@ -5,7 +5,7 @@ namespace MVI4Unity.Sample
     public class OpenViewMgr : SafeSingleton<OpenViewMgr>
     {
         /// <summary>
-        /// ÏÔÊ¾ÌáÊ¾
+        /// æ˜¾ç¤ºæç¤º
         /// </summary>
         /// <param name="content"></param>
         public void ShowTip (string content)
@@ -15,7 +15,7 @@ namespace MVI4Unity.Sample
         }
 
         /// <summary>
-        /// ÏÔÊ¾È·ÈÏ¿ò
+        /// æ˜¾ç¤ºç¡®è®¤æ¡†
         /// </summary>
         /// <param name="title"></param>
         /// <param name="content"></param>
@@ -32,7 +32,7 @@ namespace MVI4Unity.Sample
         }
 
         /// <summary>
-        /// ´ò¿ª´°¿Ú01
+        /// æ‰“å¼€çª—å£01
         /// </summary>
         public void OpenWindow01 ()
         {

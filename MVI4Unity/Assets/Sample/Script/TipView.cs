@@ -18,6 +18,7 @@ namespace MVI4Unity.Sample
     {
         [AWindowCom ("text")]
         public Text text;
+
     }
 
     public class TipViewState : AStateBase
@@ -39,6 +40,7 @@ namespace MVI4Unity.Sample
             await Task.Delay (1500);
             TipViewState state = new TipViewState ();
             state.shouldDestroy = true;
+            OpenViewMgr.Ins.OpenWindow01();
             return state;
         }
     }
