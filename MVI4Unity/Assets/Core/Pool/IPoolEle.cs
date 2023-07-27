@@ -2,7 +2,7 @@
 {
     public interface IPoolItem
     {
-        void OnPush ();
-        void OnPop ();
+        void OnPush();
+        void OnPop();
     }
 }
